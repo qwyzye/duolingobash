@@ -3,6 +3,10 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
+from backend.deps import current_user_id
+
+import random
 
 from backend.db import get_db
 from backend import auth
@@ -128,3 +132,46 @@ def leaderboard_api(request: Request, db: sqlite3.Connection = Depends(get_db)):
 @router.get("/leaderboard", response_class=HTMLResponse)
 def leaderboard_page():
     return FileResponse(STATIC_DIR / "leaderboard.html")
+
+
+
+from backend.sources_db import (
+    get_connection,
+    random_fragment,
+    random_translations,
+)
+
+
+@router.get("/api/exercise/random")
+def random_exercise(user_id: int = Depends(current_user_id)):
+    conn = get_connection()
+    try:
+        frag = random_fragment(conn)
+        if frag is None:
+            return JSONResponse(
+                {"detail": "No fragments in sources.db"},
+                status_code=404,
+            )
+        distractors = random_translations(
+            conn, frag["fragment_id"], frag["lang_pair"], limit=3
+        )
+    finally:
+        conn.close()
+
+    # Если фрагментов мало, дистракторов может не хватить — добиваем заглушками
+    fallback = ["Нет перевода", "Другое значение", "Неизвестно"]
+    while len(distractors) < 3:
+        distractors.append(fallback.pop())
+
+    options = distractors + [frag["translation"]]
+    random.shuffle(options)
+
+    return {
+        "fragment_id": frag["fragment_id"],
+        "text_ba": frag["text_ba"],
+        "translation": frag["translation"],   # правильный ответ — для проверки на клиенте
+        "options": options,
+    }
+@router.get("/exercise", response_class=HTMLResponse)
+def exercise_page():
+    return FileResponse(STATIC_DIR / "exercise.html")

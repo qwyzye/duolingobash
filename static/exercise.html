@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задание</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 640px;
+            margin: 40px auto;
+            padding: 0 16px;
+            color: #111827;
+        }
+        h1 { font-size: 20px; color: #6b7280; margin-bottom: 8px; }
+        .card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .sentence {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .highlight {
+            background: #fef3c7;
+            border-bottom: 2px solid #f59e0b;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .question { font-size: 16px; color: #6b7280; margin-bottom: 12px; }
+        .options { display: grid; gap: 10px; }
+        .option {
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s;
+        }
+        .option:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; }
+        .option.correct { border-color: #10b981; background: #ecfdf5; }
+        .option.wrong   { border-color: #ef4444; background: #fef2f2; }
+        .option:disabled { cursor: not-allowed; }
+        .feedback { margin-top: 16px; padding: 12px; border-radius: 8px; display: none; }
+        .feedback.show { display: block; }
+        .feedback.ok  { background: #ecfdf5; color: #065f46; }
+        .feedback.err { background: #fef2f2; color: #991b1b; }
+        .next {
+            margin-top: 16px;
+            padding: 12px 20px;
+            background: #3b82f6;
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+        .next.show { display: inline-block; }
+        .error { padding: 12px; background: #fee2e2; color: #b91c1c; border-radius: 6px; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+
+    <h1>Задание</h1>
+
+    <div id="error" class="error" style="display: none;"></div>
+
+    <div class="card" id="card">
+        <div class="sentence" id="sentence">Загрузка…</div>
+        <div class="question">Что означает выделенное слово?</div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next" id="next">Следующее задание →</button>
+    </div>
+
+    <script>
+        let current = null;
+
+        const sentenceEl = document.getElementById('sentence');
+        const optionsEl = document.getElementById('options');
+        const feedbackEl = document.getElementById('feedback');
+        const nextBtn = document.getElementById('next');
+        const errorBox = document.getElementById('error');
+
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        // Пытаемся найти "фокусное" слово в предложении:
+        // берём первое слово длиннее 2 символов и не из знаков препинания.
+        // Пока фрагменты — одиночные слова/короткие фразы, выделим всё предложение.
+        function renderSentence(text) {
+            // Если в тексте больше одного слова — выделим последнее слово
+            // (или первое — как решите). Для фрагментов-фраз подсветим всю фразу.
+            return `<span class="highlight">${escapeHtml(text)}</span>`;
+        }
+
+        async function load() {
+            errorBox.style.display = 'none';
+            feedbackEl.className = 'feedback';
+            feedbackEl.textContent = '';
+            nextBtn.classList.remove('show');
+            optionsEl.innerHTML = '';
+            sentenceEl.textContent = 'Загрузка…';
+
+            try {
+                const res = await fetch('/api/exercise/random', { credentials: 'same-origin' });
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                if (!res.ok) throw new Error('Ошибка ' + res.status);
+
+                current = await res.json();
+                sentenceEl.innerHTML = renderSentence(current.text_ba);
+
+                current.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option';
+                    btn.textContent = opt;
+                    btn.addEventListener('click', () => choose(btn, opt));
+                    optionsEl.appendChild(btn);
+                });
+            } catch (err) {
+                sentenceEl.textContent = '';
+                errorBox.textContent = 'Не удалось загрузить задание: ' + err.message;
+                errorBox.style.display = 'block';
+            }
+        }
+
+        function choose(btn, opt) {
+            if (btn.disabled) return;
+
+            const correct = opt === current.translation;
+            [...optionsEl.children].forEach(b => {
+                b.disabled = true;
+                if (b.textContent === current.translation) b.classList.add('correct');
+            });
+            if (!correct) btn.classList.add('wrong');
+
+            feedbackEl.className = 'feedback show ' + (correct ? 'ok' : 'err');
+            feedbackEl.textContent = correct
+                ? 'Верно! «' + current.text_ba + '» — «' + current.translation + '»'
+                : 'Неверно. Правильный перевод: «' + current.translation + '»';
+
+            nextBtn.classList.add('show');
+        }
+
+        nextBtn.addEventListener('click', load);
+
+        load();
+    </script>
+
+</body>
+</html>

@@ -101,3 +101,24 @@ def delete(conn: sqlite3.Connection, fragment_id: int) -> bool:
     cur = conn.execute("DELETE FROM fragments WHERE fragment_id = ?", (fragment_id,))
     conn.commit()
     return cur.rowcount > 0
+
+def random_fragment(conn: sqlite3.Connection) -> Optional[dict]:
+    row = conn.execute(
+        f"SELECT {_COLUMNS} FROM fragments ORDER BY RANDOM() LIMIT 1"
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def random_translations(
+    conn: sqlite3.Connection,
+    exclude_fragment_id: int,
+    lang_pair: str,
+    limit: int = 3,
+) -> list[str]:
+    rows = conn.execute(
+        "SELECT DISTINCT translation FROM fragments "
+        "WHERE lang_pair = ? AND fragment_id != ? "
+        "ORDER BY RANDOM() LIMIT ?",
+        (lang_pair, exclude_fragment_id, limit),
+    ).fetchall()
+    return [r["translation"] for r in rows]
