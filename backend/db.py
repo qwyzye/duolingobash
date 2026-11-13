@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     level INTEGER NOT NULL DEFAULT 1,
     points INTEGER NOT NULL DEFAULT 0,
+    city TEXT,
+    school TEXT,
+    grade TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     last_login_at TEXT
 );

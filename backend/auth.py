@@ -4,12 +4,20 @@ import secrets
 from datetime import datetime, timedelta
 import sqlite3
 
-def register_user(conn: sqlite3.Connection, username: str, password: str) -> int | None:
+def register_user(
+    conn: sqlite3.Connection,
+    username: str,
+    password: str,
+    city: str | None = None,
+    school: str | None = None,
+    grade: str | None = None,
+) -> int | None:
     pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     try:
         cur = conn.execute(
-            "INSERT INTO users (username, password_hash) VALUES (?, ?)",
-            (username, pw_hash),
+            "INSERT INTO users (username, password_hash, city, school, grade) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (username, pw_hash, city, school, grade),
         )
         conn.commit()
         return cur.lastrowid

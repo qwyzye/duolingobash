@@ -26,6 +26,9 @@ def register_submit(
     username: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    city: str | None = Form(None),
+    school: str | None = Form(None),
+    grade: str | None = Form(None),
     db: sqlite3.Connection = Depends(get_db),
 ):
     if password != confirm_password:
@@ -33,7 +36,11 @@ def register_submit(
     if len(password) < 8:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Пароль слишком короткий")
 
-    user_id = auth.register_user(db, username, password)
+    city = (city or "").strip() or None
+    school = (school or "").strip() or None
+    grade = (grade or "").strip() or None
+
+    user_id = auth.register_user(db, username, password, city, school, grade)
     if user_id is None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Логин уже занят")
 
@@ -102,7 +109,8 @@ def users_api(request: Request, db: sqlite3.Connection = Depends(get_db)):
         return JSONResponse({"detail": "Not authenticated"}, status_code=401)
 
     rows = db.execute(
-        "SELECT id, username, level, points, created_at, last_login_at "
+        "SELECT id, username, city, school, grade, level, points, "
+        "created_at, last_login_at "
         "FROM users ORDER BY id"
     ).fetchall()
     return [dict(r) for r in rows]
