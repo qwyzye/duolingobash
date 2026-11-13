@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.db import init_db, get_db
+from backend.sources_db import init_sources_db
 from backend.routes import auth_routes
 from backend.deps import current_user_id
 
@@ -14,7 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    init_db()            # app.db: users, sessions
+    init_sources_db()    # sources.db: fragments
     yield
 
 
