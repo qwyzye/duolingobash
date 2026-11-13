@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пользователи</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 0 16px;
+            color: #111827;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+        }
+        h1 { margin: 0; font-size: 24px; }
+        .muted { color: #6b7280; font-size: 14px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f9fafb; }
+        .center { text-align: center; color: #6b7280; }
+        .error {
+            padding: 12px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Зарегистрированные пользователи</h1>
+        <span class="muted" id="count"></span>
+    </header>
+
+    <div id="error" class="error" style="display: none;"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Логин</th>
+                <th>Дата регистрации</th>
+                <th>Последний вход</th>
+            </tr>
+        </thead>
+        <tbody id="users-body">
+            <tr><td colspan="4" class="empty">Загрузка…</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        const body = document.getElementById('users-body');
+        const count = document.getElementById('count');
+        const errorBox = document.getElementById('error');
+
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/users', { credentials: 'same-origin' });
+
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                if (!res.ok) {
+                    throw new Error('Ошибка ' + res.status);
+                }
+
+                const users = await res.json();
+                count.textContent = 'Всего: ' + users.length;
+
+                if (users.length === 0) {
+                    body.innerHTML = '<tr><td colspan="4" class="empty">Пользователей пока нет</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${u.id}</td>
+                        <td>${escapeHtml(u.username)}</td>
+                        <td>${escapeHtml(u.created_at || '')}</td>
+                        <td>${u.last_login_at ? escapeHtml(u.last_login_at) : '<span class="muted">—</span>'}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                errorBox.textContent = 'Не удалось загрузить пользователей: ' + err.message;
+                errorBox.style.display = 'block';
+                body.innerHTML = '<tr><td colspan="4" class="empty">—</td></tr>';
+            }
+        }
+
+        loadUsers();
+    </script>
+
+</body>
+</html>

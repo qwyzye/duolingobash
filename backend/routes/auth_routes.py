@@ -1,11 +1,12 @@
 import sqlite3
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 
 from backend.db import get_db
 from backend import auth
+from backend.auth import get_user_by_token
 
 router = APIRouter()
 STATIC_DIR = Path(__file__).resolve().parent.parent.parent / "static"
@@ -44,7 +45,6 @@ def register_submit(
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page():
-    # если есть отдельный login.html — положите в static/ и отдайте здесь
     return HTMLResponse(
         '<h1>Вход</h1>'
         '<form action="/login" method="POST">'
@@ -76,6 +76,55 @@ def login_submit(
 
 
 @router.post("/logout")
-def logout_submit(request_headers=Depends(lambda: None), db: sqlite3.Connection = Depends(get_db)):
-    # проще через Request — перепишем ниже, но оставим заглушку
-    return RedirectResponse(url="/login", status_code=303)
+def logout_submit(request: Request, db: sqlite3.Connection = Depends(get_db)):
+    token = request.cookies.get("session_token")
+    if token:
+        db.execute("DELETE FROM sessions WHERE token = ?", (token,))
+        db.commit()
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie("session_token")
+    return response
+
+
+@router.get("/users")
+def users_page():
+    return FileResponse(STATIC_DIR / "users.html")
+
+
+@router.get("/api/users")
+def users_api(request: Request, db: sqlite3.Connection = Depends(get_db)):
+    token = request.cookies.get("session_token")
+    if not token or get_user_by_token(db, token) is None:
+        return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+
+    rows = db.execute(
+        "SELECT id, username, level, points, created_at, last_login_at "
+        "FROM users ORDER BY id"
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+@router.get("/api/leaderboard")
+def leaderboard_api(request: Request, db: sqlite3.Connection = Depends(get_db)):
+    token = request.cookies.get("session_token")
+    if not token or get_user_by_token(db, token) is None:
+        return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+
+    rows = db.execute(
+        "SELECT id, username, level, points "
+        "FROM users "
+        "ORDER BY points DESC, level DESC, id ASC "
+        "LIMIT 100"
+    ).fetchall()
+
+    result = []
+    for i, r in enumerate(rows, start=1):
+        item = dict(r)
+        item["rank"] = i
+        result.append(item)
+    return result
+
+
+@router.get("/leaderboard", response_class=HTMLResponse)
+def leaderboard_page():
+    return FileResponse(STATIC_DIR / "leaderboard.html")
