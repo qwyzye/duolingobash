@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from backend.deps import current_user_id
 
 import random
+from datetime import datetime, date, timedelta
 
 from backend.db import get_db
 from backend import auth
@@ -183,3 +184,42 @@ def random_exercise(user_id: int = Depends(current_user_id)):
 @router.get("/exercise", response_class=HTMLResponse)
 def exercise_page():
     return FileResponse(STATIC_DIR / "exercise.html")
+
+@router.get("/api/me")
+def me(request: Request, db: sqlite3.Connection = Depends(get_db)):
+    token = request.cookies.get("session_token")
+    if not token:
+        return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+    user_id = get_user_by_token(db, token)
+    if user_id is None:
+        return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+
+    row = db.execute(
+        "SELECT id, username, level, points, city, school, grade, "
+        "created_at, last_login_at "
+        "FROM users WHERE id = ?",
+        (user_id,),
+    ).fetchone()
+    if not row:
+        return JSONResponse({"detail": "User not found"}, status_code=404)
+
+    data = dict(row)
+    # streak_days в схеме users нет — считаем заглушкой 0, позже добавите
+    data["streak_days"] = 0
+    return data
+
+
+@router.get("/api/word-of-day")
+def word_of_day(user_id: int = Depends(current_user_id)):
+    from backend.sources_db import get_connection, random_fragment
+    conn = get_connection()
+    try:
+        frag = random_fragment(conn)
+    finally:
+        conn.close()
+    if frag is None:
+        return JSONResponse({"detail": "No fragments"}, status_code=404)
+    return {
+        "text_ba": frag["text_ba"],
+        "translation": frag["translation"],
+    }
