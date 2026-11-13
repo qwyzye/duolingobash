@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from backend.deps import current_user_id
 
 import random
-from datetime import datetime, date, timedelta
 
 from backend.db import get_db
 from backend import auth
@@ -57,15 +56,7 @@ def register_submit(
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page():
-    return HTMLResponse(
-        '<h1>Вход</h1>'
-        '<form action="/login" method="POST">'
-        '<p><label>Логин: <input name="username" required></label></p>'
-        '<p><label>Пароль: <input type="password" name="password" required></label></p>'
-        '<button type="submit">Войти</button>'
-        '</form>'
-        '<p><a href="/register">Регистрация</a></p>'
-    )
+    return FileResponse(STATIC_DIR / "login.html")
 
 
 @router.post("/login")
