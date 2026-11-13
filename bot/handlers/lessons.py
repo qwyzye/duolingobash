@@ -17,13 +17,19 @@ class LessonState(StatesGroup):
 async def start_lesson(message: Message, state: FSMContext):
     msg = await message.answer("⏳ Генерирую задание, подожди пару секунд...")
     
-    # Безопасно достаем данные юзера (если level нет, ставим 1)
     user_data = get_user(message.from_user.id)
     level = user_data.get('level', 1) if user_data else 1
     known_words = get_user_words(message.from_user.id)
-    
-    # Типы заданий
-    task_types = ["ru_to_bash", "bash_to_ru", "sentence_ru_to_bash", "fill_blank"]
+
+    task_types = [
+        "word_ru_bash",       # Перевод слова с ру на баш
+        "word_bash_ru",       # Перевод слова с баш на ру
+        "sentence_ru_bash",   # Перевод предложения с ру на баш
+        "sentence_bash_ru",   # Перевод предложения с баш на ру
+        "fill_blank",         # Вставить пропущенное слово
+        "make_sentence",      # Составить предложение из слов
+        "find_extra"          # Найти лишнее слово
+    ]
     chosen_type = random.choice(task_types)
     
     task = await generate_task(chosen_type, level=level, known_words=known_words)

@@ -1,0 +1,9 @@
+TOKEN = "9207208443:AAGV-OXvF5dxS79pVKP6oMvX0a3ZH-fbXtc"
+
+API_KEYS = [
+    "AQ.Ab8RN6K9O1flkC6bvFTeQXVDDKZuW93q_URKdvWQh2Cs1fy2_w",
+    "AQ.Ab8RN6JaIjwG_N_l2BS4UvBdB9lOfcT0RdrXkf5UFJzNYb1frQ",
+    "AQ.Ab8RN6JhXiJzxIHjpMTmms0GFM0_CK4ht-HRLbAtiQx8h-viNw"
+]
+
+MODEL_NAME = "gemini-3.5-flash-lite"

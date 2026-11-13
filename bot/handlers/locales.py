@@ -1,0 +1,152 @@
+# Словари с переводами интерфейса
+TEXTS = {
+    "ru": {
+        "welcome": "👋 Добро пожаловать на платформу «Башкирская языковая школа»!\n\nДля начала выберите язык интерфейса и перевода:",
+        "welcome_back": "👋 С возвращением! Выберите действие:",
+        "enter_login": "Введите ваш логин, который вы указали при регистрации на сайте:",
+        "enter_password": "Отлично. Теперь введите ваш пароль от сайта:",
+        "reg_success": "✅ Регистрация успешно завершена! Добро пожаловать.",
+        "menu": "Главное меню:",
+        "btn_daily": "📖 Ежедневное задание",
+        "btn_practice": "🏋️ Практика перевода",
+        "btn_top": "🏆 Рейтинг",
+        "btn_profile": "👤 Профиль",
+        "btn_settings": "⚙️ Настройки",
+        "btn_back": "⬅️ В меню",
+        "btn_next": "➡️ Следующее задание",
+        "settings": "⚙️ <b>Настройки</b>\nВыберите язык интерфейса и перевода:",
+        "lang_updated": "✅ Язык успешно обновлен!",
+        
+        "daily_limit": "Лимит ежедневных заданий на сегодня исчерпан. Возвращайтесь завтра!",
+        "daily_empty": "База текстов пуста.",
+        "processing": "Обработка фрагмента...",
+        "ai_error": "Ошибка сервера перевода.",
+        "task_level": "📖 Ежедневное задание (Уровень {level})",
+        "original": "Оригинал:",
+        "ai_translation": "Автоматический перевод на {lang}:",
+        "source": "Источник:",
+        "btn_confirm": "✅ Подтвердить перевод",
+        "btn_correct": "✏️ Предложить исправление",
+        "confirmed": "✅ Перевод подтвержден. Начислено 15 баллов.",
+        "level_up": "🎓 Ваш уровень повышен до {level}.",
+        "write_correction": "✏️ Введите ваш вариант перевода текстом:",
+        "correction_saved": "✅ Ваш вариант отправлен на проверку экспертам. Начислено 25 баллов.",
+        
+        "practice_title": "🏋️ <b>Практика перевода</b>\n\nПереведите на {lang} язык:\n<i>{text}</i>\n\nНапишите ваш вариант:",
+        "checking": "Выполняется проверка...",
+        "correct": "✅ <b>Верно!</b> Начислено 20 баллов.\n\n<i>{explanation}</i>",
+        "error_found": "❌ <b>Обнаружена ошибка.</b>\n\n<b>Рекомендуемый перевод:</b> {correct}\n<i>{explanation}</i>\n\nЕсли вы считаете, что перевод верен, вы можете оспорить решение.",
+        "btn_dispute": "⚠️ Оспорить перевод",
+        "dispute_saved": "✅ Ваш вариант отправлен на проверку экспертам. Начислено 10 баллов.",
+        
+        "top_title": "🏆 <b>Топ за {tf}</b>\n\n",
+        "top_empty": "Пока пусто.",
+        "tf_today": "сегодня",
+        "tf_week": "неделю",
+        "tf_month": "месяц",
+        
+        "profile": "👤 <b>Профиль</b>\n\nИмя в TG: {name}\nЛогин на сайте: {login}\nУровень: {level}\nОчки: {points}\nЯзыковая пара: {lang_pair}"
+    },
+    "en": {
+        "welcome": "👋 Welcome to the «Bashkir Language School» platform!\n\nFirst, choose the interface and translation language:",
+        "welcome_back": "👋 Welcome back! Choose an action:",
+        "enter_login": "Enter your login from the website:",
+        "enter_password": "Great. Now enter your website password:",
+        "reg_success": "✅ Registration complete! Welcome.",
+        "menu": "Main menu:",
+        "btn_daily": "📖 Daily Task",
+        "btn_practice": "🏋️ Translation Practice",
+        "btn_top": "🏆 Leaderboard",
+        "btn_profile": "👤 Profile",
+        "btn_settings": "⚙️ Settings",
+        "btn_back": "⬅️ Main Menu",
+        "btn_next": "➡️ Next Task",
+        "settings": "⚙️ <b>Settings</b>\nChoose interface and translation language:",
+        "lang_updated": "✅ Language updated successfully!",
+        
+        "daily_limit": "Daily task limit reached. Come back tomorrow!",
+        "daily_empty": "Text database is empty.",
+        "processing": "Processing fragment...",
+        "ai_error": "Translation server error.",
+        "task_level": "📖 Daily Task (Level {level})",
+        "original": "Original:",
+        "ai_translation": "AI Translation to {lang}:",
+        "source": "Source:",
+        "btn_confirm": "✅ Confirm translation",
+        "btn_correct": "✏️ Suggest correction",
+        "confirmed": "✅ Translation confirmed. +15 points.",
+        "level_up": "🎓 Your level increased to {level}.",
+        "write_correction": "✏️ Enter your correction as text:",
+        "correction_saved": "✅ Your variant is sent to experts. +25 points.",
+        
+        "practice_title": "🏋️ <b>Translation Practice</b>\n\nTranslate to {lang}:\n<i>{text}</i>\n\nWrite your variant:",
+        "checking": "Checking...",
+        "correct": "✅ <b>Correct!</b> +20 points.\n\n<i>{explanation}</i>",
+        "error_found": "❌ <b>Error found.</b>\n\n<b>Recommended:</b> {correct}\n<i>{explanation}</i>\n\nIf you think you are right, dispute it.",
+        "btn_dispute": "⚠️ Dispute translation",
+        "dispute_saved": "✅ Your variant is sent to experts. +10 points.",
+        
+        "top_title": "🏆 <b>Top for {tf}</b>\n\n",
+        "top_empty": "Empty for now.",
+        "tf_today": "today",
+        "tf_week": "week",
+        "tf_month": "month",
+        
+        "profile": "👤 <b>Profile</b>\n\nTG Name: {name}\nSite Login: {login}\nLevel: {level}\nPoints: {points}\nLanguage Pair: {lang_pair}"
+    },
+    "kk": {
+        "welcome": "👋 «Башқұрт тіл мектебі» платформасына қош келдіңіз!\n\nАлдымен интерфейс және аударма тілін таңдаңыз:",
+        "welcome_back": "👋 Қайта оралуыңызбен! Әрекетті таңдаңыз:",
+        "enter_login": "Сайтта тіркелген логиніңізді енгізіңіз:",
+        "enter_password": "Керемет. Енді сайттағы құпия сөзіңізді енгізіңіз:",
+        "reg_success": "✅ Тіркелу сәтті аяқталды! Қош келдіңіз.",
+        "menu": "Басты мәзір:",
+        "btn_daily": "📖 Күнделікті тапсырма",
+        "btn_practice": "🏋️ Аударма тәжірибесі",
+        "btn_top": "🏆 Рейтинг",
+        "btn_profile": "👤 Профиль",
+        "btn_settings": "⚙️ Баптаулар",
+        "btn_back": "⬅️ Мәзірге",
+        "btn_next": "➡️ Келесі тапсырма",
+        "settings": "⚙️ <b>Баптаулар</b>\nИнтерфейс және аударма тілін таңдаңыз:",
+        "lang_updated": "✅ Тіл сәтті жаңартылды!",
+        
+        "daily_limit": "Күнделікті тапсырма шегіне жеттіңіз. Ертең келіңіз!",
+        "daily_empty": "Мәтіндер базасы бос.",
+        "processing": "Фрагмент өңделуде...",
+        "ai_error": "Аударма серверінің қатесі.",
+        "task_level": "📖 Күнделікті тапсырма (Деңгей {level})",
+        "original": "Түпнұсқа:",
+        "ai_translation": "{lang} тіліне автоматты аударма:",
+        "source": "Дереккөз:",
+        "btn_confirm": "✅ Аударманы растау",
+        "btn_correct": "✏️ Түзету ұсыну",
+        "confirmed": "✅ Аударма расталды. +15 ұпай.",
+        "level_up": "🎓 Деңгейіңіз {level} болды.",
+        "write_correction": "✏️ Түзетуіңізді мәтінмен енгізіңіз:",
+        "correction_saved": "✅ Сіздің нұсқаңыз сарапшыларға жіберілді. +25 ұпай.",
+        
+        "practice_title": "🏋️ <b>Аударма тәжірибесі</b>\n\n{lang} тіліне аударыңыз:\n<i>{text}</i>\n\nНұсқаңызды жазыңыз:",
+        "checking": "Тексерілуде...",
+        "correct": "✅ <b>Дұрыс!</b> +20 ұпай.\n\n<i>{explanation}</i>",
+        "error_found": "❌ <b>Қате табылды.</b>\n\n<b>Ұсынылатын нұсқа:</b> {correct}\n<i>{explanation}</i>\n\nДұрыс деп санасаңыз, дауласа аласыз.",
+        "btn_dispute": "⚠️ Аудармаға дауласу",
+        "dispute_saved": "✅ Нұсқаңыз сарапшыларға жіберілді. +10 ұпай.",
+        
+        "top_title": "🏆 <b>{tf} үздіктері</b>\n\n",
+        "top_empty": "Әзірге бос.",
+        "tf_today": "Бүгінгі",
+        "tf_week": "Апталық",
+        "tf_month": "Айлық",
+        
+        "profile": "👤 <b>Профиль</b>\n\nTG аты: {name}\nСайттағы логин: {login}\nДеңгей: {level}\nҰпайлар: {points}\nТіл жұбы: {lang_pair}"
+    }
+}
+
+def get_text(key, lang="ru", **kwargs):
+    """Возвращает текст на нужном языке с подстановкой переменных"""
+    lang_texts = TEXTS.get(lang, TEXTS["ru"]) # Если язык не найден, берем русский
+    text = lang_texts.get(key, TEXTS["ru"].get(key, "Error text"))
+    if kwargs:
+        return text.format(**kwargs)
+    return text
