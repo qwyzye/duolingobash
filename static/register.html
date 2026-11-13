@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+</head>
+<body>
+
+    <main>
+        <h1>Регистрация</h1>
+        
+        <form action="/register" method="POST" onsubmit="return validateForm()">
+            <div>
+                <label for="username">Логин или Email:</label>
+
+                <input type="text" id="username" name="username" required autocomplete="username">
+            </div>
+            
+            
+
+            
+            <div>
+                <label for="password">Пароль:</label>
+
+                <input type="password" id="password" name="password" required autocomplete="new-password">
+            </div>
+            
+            
+
+            
+            <div>
+                <label for="confirm_password">Подтвердите пароль:</label>
+
+                <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+            </div>
+            
+            
+
+            
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+    </main>
+
+    <script>
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password !== confirmPassword) {
+                alert('Пароли не совпадают! Пожалуйста, проверьте ввод.');
+                return false; // Отменяет отправку формы
+            }
+            return true;
+        }
+    </script>
+
+</body>
+</html>
