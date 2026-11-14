@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from backend.deps import current_user_id
 
 import random
+from pydantic import BaseModel, Field
 
 from backend.db import get_db
 from backend import auth
@@ -214,3 +215,24 @@ def word_of_day(user_id: int = Depends(current_user_id)):
         "text_ba": frag["text_ba"],
         "translation": frag["translation"],
     }
+
+class DisputeIn(BaseModel):
+    text_ba: str = Field(min_length=1, max_length=1000)
+    translation: str = Field(min_length=1, max_length=2000)
+    lang_pair: str = Field(default="ba-ru", pattern=r"^[a-z]{2}-[a-z]{2}$")
+
+@router.post("/api/exercise/dispute", status_code=201)
+def dispute_translation(data: DisputeIn, user_id: int = Depends(current_user_id)):
+    from backend.sources_db import add_disputed
+    conn = get_connection()
+    try:
+        item = add_disputed(
+            conn,
+            text_ba=data.text_ba,
+            translation=data.translation,
+            lang_pair=data.lang_pair,
+            source=f"user:{user_id}",
+        )
+    finally:
+        conn.close()
+    return item

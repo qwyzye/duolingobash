@@ -104,7 +104,9 @@ def delete(conn: sqlite3.Connection, fragment_id: int) -> bool:
 
 def random_fragment(conn: sqlite3.Connection) -> Optional[dict]:
     row = conn.execute(
-        f"SELECT {_COLUMNS} FROM fragments ORDER BY RANDOM() LIMIT 1"
+        f"SELECT {_COLUMNS} FROM fragments "
+        "WHERE status = 'confirmed' "
+        "ORDER BY RANDOM() LIMIT 1"
     ).fetchone()
     return dict(row) if row else None
 
@@ -117,8 +119,24 @@ def random_translations(
 ) -> list[str]:
     rows = conn.execute(
         "SELECT DISTINCT translation FROM fragments "
-        "WHERE lang_pair = ? AND fragment_id != ? "
+        "WHERE lang_pair = ? AND fragment_id != ? AND status = 'confirmed' "
         "ORDER BY RANDOM() LIMIT ?",
         (lang_pair, exclude_fragment_id, limit),
     ).fetchall()
     return [r["translation"] for r in rows]
+
+def add_disputed(
+    conn: sqlite3.Connection,
+    text_ba: str,
+    translation: str,
+    lang_pair: str = "ba-ru",
+    source: str | None = None,
+) -> dict:
+    """Пользователь предложил свой вариант перевода — сохраняем как непроверенный."""
+    cur = conn.execute(
+        "INSERT INTO fragments (text_ba, lang_pair, translation, source, confirmed, status) "
+        "VALUES (?, ?, ?, ?, 0, 'expert_review')",
+        (text_ba, lang_pair, translation, source),
+    )
+    conn.commit()
+    return get(conn, cur.lastrowid)

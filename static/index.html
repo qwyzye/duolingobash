@@ -26,10 +26,12 @@ main{padding:0 0 29px}
 .hero:before,.hero:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.08);border-radius:50%;width:430px;height:430px;top:-180px;left:640px}.hero:after{width:500px;height:500px;left:580px;top:-210px}
 .date{font-size:12px;font-weight:600;position:relative;z-index:2}.hero h1{font-size:34px;line-height:1.2;margin:12px 0 13px;font-weight:900;position:relative;z-index:2}.hero p{font-size:15px;line-height:1.5;margin:0;position:relative;z-index:2}
 .mascot{position:absolute;z-index:1;width:340px;height:auto;max-height:185px;object-fit:contain;object-position:center bottom;left:365px;bottom:0;transform:none;filter:none;display:block}
-.lesson{position:absolute;right:30px;top:30px;width:357px;height:124px;border-radius:20px;background:white;color:#17253e;display:flex;align-items:center;padding:20px;gap:17px;z-index:2}
+.lesson{position:absolute;right:30px;top:30px;width:357px;height:124px;border-radius:20px;background:white;color:#17253e;display:flex;align-items:center;padding:20px;gap:17px;z-index:2;text-decoration:none}
+.lesson:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
 .lesson-icon,.quick-icon{width:62px;height:74px;border-radius:12px;background:#def5d2;display:grid;place-items:center;color:#00c878;font-size:22px;flex-shrink:0}.lesson small{color:#8592a4;font-size:10px;font-weight:700}.lesson strong{display:block;font-size:15px;margin:7px 0 6px}.lesson em{font-style:normal;color:#79927b;font-size:11px}
 .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
-.quick-card{height:81px;border:1px solid #20d879;border-radius:20px;background:#fff;display:flex;align-items:center;padding:14px;gap:12px}
+.quick-card{height:81px;border:1px solid #20d879;border-radius:20px;background:#fff;display:flex;align-items:center;padding:14px;gap:12px;text-decoration:none;color:inherit}
+.quick-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
 .quick-icon{width:38px;height:38px;border-radius:12px;font-size:18px}.quick-card strong{display:block;font-size:12px;color:#1b2940}.quick-card small{display:block;font-size:11px;color:#00c944;margin-top:4px}.arrow{margin-left:auto;color:#00c83f;font-size:21px}
 .content{display:grid;grid-template-columns:1.58fr 1.03fr;gap:28px;margin:26px 6px 0}
 .quiz{background:#fff;border:1px solid var(--line);border-radius:23px;padding:20px 23px 27px;min-height:298px}
@@ -37,6 +39,12 @@ main{padding:0 0 29px}
 .quiz h2{font-size:27px;margin:15px 0 5px;font-weight:900}.question{font-size:18px;font-weight:700;margin-bottom:17px}
 .answer{height:52px;background:#f4f7f2;border-radius:14px;display:flex;align-items:center;padding:0 17px;gap:70px;margin-bottom:19px}.answer b{font-size:27px;color:#238562}.answer span{font-size:14px;color:#6f8579}
 .options{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.option{height:53px;border:1.5px solid #b9d8b8;border-radius:13px;display:flex;align-items:center;padding:0 12px;gap:22px;font-size:15px;font-weight:800;cursor:pointer}.option b{color:#238562}
+.quiz-actions{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.quiz-actions a{padding:11px 20px;border-radius:12px;font-weight:800;font-size:14px;text-decoration:none;display:inline-block}
+.btn-primary{background:#25c95d;color:#fff}
+.btn-primary:hover{background:#1fae4f}
+.btn-secondary{background:#f4f7f2;color:#238562;border:1.5px solid #b9d8b8}
+.btn-secondary:hover{background:#def5d2}
 .ranking{background:#fff;border:1px solid #18d77b;border-radius:48px;padding:18px 19px 20px;min-height:298px}.ranking h2{font-size:30px;color:#2ea27a;font-weight:900;margin:0 0 2px}.ranking>p{color:#2ea27a;margin:0 0 7px;font-size:14px}
 .person{height:54px;display:flex;align-items:center;padding:0 17px;gap:13px;border-radius:17px}.person.first{background:#def5d2}.rank{font-size:18px;color:#238562;font-weight:800;width:20px}.person .avatar{width:39px;height:39px;border-radius:50%;background:#f3f7f2;color:#258562;display:grid;place-items:center;font-weight:800}.person.first .avatar{background:white}.who{flex:1}.who strong{font-size:14px;display:block}.who small{font-size:10px;color:#758b7f}.xp{font-size:14px;color:#238562;font-weight:900}
 .bottom{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:18px;margin:19px 6px 0}
@@ -52,7 +60,7 @@ footer{height:54px;border-top:1px solid #e2e9e4;display:flex;align-items:center;
 <div class="page">
 <header>
   <div class="brand"><div class="brand-mark"></div><div><div class="brand-name">Көшәк</div><div class="brand-sub">школа возможностей</div></div></div>
-  <nav><a class="active" href="#">Главная</a><a href="#">О школе</a><a href="#">Учёба</a><a href="#">Школьная жизнь</a></nav>
+  <nav><a class="active" href="/">Главная</a><a href="#">О школе</a><a href="/exercise">Учёба</a><a href="#">Школьная жизнь</a></nav>
   <div class="profile" id="profile-box">
     <span class="bell">♧</span>
     <div class="avatar" id="profile-avatar">—</div>
@@ -70,13 +78,36 @@ footer{height:54px;border-top:1px solid #e2e9e4;display:flex;align-items:center;
   <h1>Доброе утро, <span id="greeting-name">…</span>!</h1>
   <p>Всё, чем живёт наше приложение — в одном месте.<br>Пусть сегодня случится что-нибудь замечательное!</p>
   <img class="mascot" src="/static/assets/mascot.png" alt="Лисёнок с флагом Башкортостана">
-  <div class="lesson"><div class="lesson-icon">▣</div><div><small>Вы не закончили:</small><strong>Еда: Блюда, Фрукты, Овощи</strong><em>Язык: Ризыкътар, емеш-еләк, йәшелсә</em></div></div>
+  <a class="lesson" href="/exercise">
+    <div class="lesson-icon">▣</div>
+    <div>
+      <small>Продолжить обучение:</small>
+      <strong>Еда: Блюда, Фрукты, Овощи</strong>
+      <em>Перейти к заданиям →</em>
+    </div>
+  </a>
 </section>
 <section class="quick">
-  <div class="quick-card"><div class="quick-icon">▣</div><div><strong>Список заданий</strong><small>Вам есть что закончить</small></div><span class="arrow">›</span></div>
-  <div class="quick-card"><div class="quick-icon">▦</div><div><strong>Ваша серия</strong><small id="streak-card-text">Вы в ударе уже 0 дней</small></div><span class="arrow">›</span></div>
-  <div class="quick-card"><div class="quick-icon">☷</div><div><strong>Выбрать язык</strong><small>Мы поможем вам</small></div><span class="arrow">›</span></div>
-  <div class="quick-card"><div class="quick-icon">♧</div><div><strong>Последняя тема</strong><small style="color:#79927b">Еда : Блюда, фрукты, овощи</small></div><span class="arrow" style="color:#79927b">›</span></div>
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">▣</div>
+    <div><strong>Список заданий</strong><small>Вам есть что закончить</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/leaderboard">
+    <div class="quick-icon">▦</div>
+    <div><strong>Ваша серия</strong><small id="streak-card-text">Вы в ударе уже 0 дней</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">☷</div>
+    <div><strong>Выбрать язык</strong><small>Мы поможем вам</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">♧</div>
+    <div><strong>Последняя тема</strong><small style="color:#79927b">Еда : Блюда, фрукты, овощи</small></div>
+    <span class="arrow" style="color:#79927b">›</span>
+  </a>
 </section>
 <section class="content">
   <div class="quiz">
@@ -84,6 +115,10 @@ footer{height:54px;border-top:1px solid #e2e9e4;display:flex;align-items:center;
     <h2>Начнём с простого?</h2><div class="question" id="quiz-question">Загрузка…</div>
     <div class="answer"><b id="quiz-word">…</b><span>Одно слово — и разговор уже начался.</span></div>
     <div class="options" id="quiz-options"></div>
+    <div class="quiz-actions">
+      <a class="btn-primary" href="/exercise">Начать задания →</a>
+      <a class="btn-secondary" href="/exercise">Все задания</a>
+    </div>
   </div>
   <div class="ranking"><h2>Лучшие ученики</h2><p>Рейтинг за неделю</p>
     <div id="ranking-list"><p style="color:#758b7f;padding:12px;">Загрузка…</p></div>
@@ -127,7 +162,6 @@ async function api(path) {
   return res.json();
 }
 
-// дата в шапке
 (function setDate() {
   const d = new Date();
   const months = ['ЯНВАРЯ','ФЕВРАЛЯ','МАРТА','АПРЕЛЯ','МАЯ','ИЮНЯ','ИЮЛЯ','АВГУСТА','СЕНТЯБРЯ','ОКТЯБРЯ','НОЯБРЯ','ДЕКАБРЯ'];
@@ -135,7 +169,6 @@ async function api(path) {
   $('today-date').textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 })();
 
-// профиль
 async function loadMe() {
   try {
     const me = await api('/api/me');
@@ -160,7 +193,6 @@ async function loadMe() {
   }
 }
 
-// разминка
 async function loadQuiz() {
   try {
     const q = await api('/api/exercise/random');
@@ -189,7 +221,6 @@ async function loadQuiz() {
   }
 }
 
-// топ
 async function loadRanking() {
   try {
     const items = await api('/api/leaderboard');
@@ -209,7 +240,6 @@ async function loadRanking() {
   } catch (e) { console.warn('ranking:', e); }
 }
 
-// слово дня
 async function loadWord() {
   try {
     const w = await api('/api/word-of-day');
@@ -219,7 +249,6 @@ async function loadWord() {
   } catch (e) { console.warn('word:', e); }
 }
 
-// streak — дни недели
 function renderStreak() {
   const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   const today = new Date();

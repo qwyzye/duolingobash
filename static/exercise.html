@@ -5,72 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Задание</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            max-width: 640px;
-            margin: 40px auto;
-            padding: 0 16px;
-            color: #111827;
-        }
+        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #111827; }
         h1 { font-size: 20px; color: #6b7280; margin-bottom: 8px; }
-        .card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .sentence {
-            font-size: 22px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-        .highlight {
-            background: #fef3c7;
-            border-bottom: 2px solid #f59e0b;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .sentence { font-size: 22px; line-height: 1.6; margin-bottom: 24px; }
+        .highlight { background: #fef3c7; border-bottom: 2px solid #f59e0b; padding: 2px 4px; border-radius: 4px; font-weight: 600; }
         .question { font-size: 16px; color: #6b7280; margin-bottom: 12px; }
         .options { display: grid; gap: 10px; }
-        .option {
-            padding: 14px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.15s;
-        }
+        .option { padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 16px; cursor: pointer; text-align: left; transition: all 0.15s; }
         .option:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; }
         .option.correct { border-color: #10b981; background: #ecfdf5; }
-        .option.wrong   { border-color: #ef4444; background: #fef2f2; }
+        .option.wrong { border-color: #ef4444; background: #fef2f2; }
         .option:disabled { cursor: not-allowed; }
         .feedback { margin-top: 16px; padding: 12px; border-radius: 8px; display: none; }
         .feedback.show { display: block; }
-        .feedback.ok  { background: #ecfdf5; color: #065f46; }
+        .feedback.ok { background: #ecfdf5; color: #065f46; }
         .feedback.err { background: #fef2f2; color: #991b1b; }
-        .next {
-            margin-top: 16px;
-            padding: 12px 20px;
-            background: #3b82f6;
-            color: #fff;
-            border: 0;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            display: none;
-        }
+        .row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+        .next, .dispute-btn { padding: 12px 20px; border: 0; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .next { background: #3b82f6; color: #fff; display: none; }
         .next.show { display: inline-block; }
+        .dispute-btn { background: #fff; color: #92400e; border: 1.5px solid #fbbf24; display: none; }
+        .dispute-btn.show { display: inline-block; }
         .error { padding: 12px; background: #fee2e2; color: #b91c1c; border-radius: 6px; margin-bottom: 16px; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+        .modal-backdrop.show { display: flex; }
+        .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 480px; width: 100%; }
+        .modal h2 { margin: 0 0 8px; font-size: 18px; }
+        .modal p { color: #6b7280; font-size: 14px; margin: 0 0 16px; }
+        .modal textarea { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 16px; font-family: inherit; box-sizing: border-box; }
+        .modal textarea:focus { outline: none; border-color: #3b82f6; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+        .modal-actions button { padding: 10px 16px; border-radius: 8px; border: 0; font-size: 15px; cursor: pointer; }
+        .btn-cancel { background: #f3f4f6; color: #374151; }
+        .btn-send { background: #f59e0b; color: #fff; }
+        .btn-send:disabled { background: #d1d5db; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <h1>Задание</h1>
-
     <div id="error" class="error" style="display: none;"></div>
 
     <div class="card" id="card">
@@ -78,7 +52,22 @@
         <div class="question">Что означает выделенное слово?</div>
         <div class="options" id="options"></div>
         <div class="feedback" id="feedback"></div>
-        <button class="next" id="next">Следующее задание →</button>
+        <div class="row">
+            <button class="next" id="next">Следующее задание →</button>
+            <button class="dispute-btn" id="dispute">Оспорить перевод</button>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modal">
+        <div class="modal">
+            <h2>Предложить свой перевод</h2>
+            <p>Ваш вариант попадёт в базу как непроверенный и будет рассмотрен.</p>
+            <textarea id="dispute-text" placeholder="Введите ваш вариант перевода…"></textarea>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="dispute-cancel">Отмена</button>
+                <button class="btn-send" id="dispute-send">Отправить</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -88,7 +77,12 @@
         const optionsEl = document.getElementById('options');
         const feedbackEl = document.getElementById('feedback');
         const nextBtn = document.getElementById('next');
+        const disputeBtn = document.getElementById('dispute');
         const errorBox = document.getElementById('error');
+        const modal = document.getElementById('modal');
+        const disputeText = document.getElementById('dispute-text');
+        const disputeSend = document.getElementById('dispute-send');
+        const disputeCancel = document.getElementById('dispute-cancel');
 
         function escapeHtml(s) {
             return String(s ?? '').replace(/[&<>"']/g, c => ({
@@ -96,33 +90,22 @@
             }[c]));
         }
 
-        // Пытаемся найти "фокусное" слово в предложении:
-        // берём первое слово длиннее 2 символов и не из знаков препинания.
-        // Пока фрагменты — одиночные слова/короткие фразы, выделим всё предложение.
-        function renderSentence(text) {
-            // Если в тексте больше одного слова — выделим последнее слово
-            // (или первое — как решите). Для фрагментов-фраз подсветим всю фразу.
-            return `<span class="highlight">${escapeHtml(text)}</span>`;
-        }
-
         async function load() {
             errorBox.style.display = 'none';
             feedbackEl.className = 'feedback';
             feedbackEl.textContent = '';
             nextBtn.classList.remove('show');
+            disputeBtn.classList.remove('show');
             optionsEl.innerHTML = '';
             sentenceEl.textContent = 'Загрузка…';
 
             try {
                 const res = await fetch('/api/exercise/random', { credentials: 'same-origin' });
-                if (res.status === 401) {
-                    window.location.href = '/login';
-                    return;
-                }
+                if (res.status === 401) { window.location.href = '/login'; return; }
                 if (!res.ok) throw new Error('Ошибка ' + res.status);
 
                 current = await res.json();
-                sentenceEl.innerHTML = renderSentence(current.text_ba);
+                sentenceEl.innerHTML = `<span class="highlight">${escapeHtml(current.text_ba)}</span>`;
 
                 current.options.forEach(opt => {
                     const btn = document.createElement('button');
@@ -154,10 +137,58 @@
                 : 'Неверно. Правильный перевод: «' + current.translation + '»';
 
             nextBtn.classList.add('show');
+            // Кнопка «Оспорить» — в любом случае, но особенно уместна при ошибке
+            disputeBtn.classList.add('show');
         }
 
-        nextBtn.addEventListener('click', load);
+        // модалка
+        function openModal() {
+            disputeText.value = current && current.translation ? current.translation : '';
+            modal.classList.add('show');
+            disputeSend.disabled = false;
+            disputeText.focus();
+        }
+        function closeModal() {
+            modal.classList.remove('show');
+        }
 
+        disputeBtn.addEventListener('click', openModal);
+        disputeCancel.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        disputeSend.addEventListener('click', async () => {
+            const value = disputeText.value.trim();
+            if (!value) { disputeText.focus(); return; }
+
+            disputeSend.disabled = true;
+            disputeSend.textContent = 'Отправка…';
+
+            try {
+                const res = await fetch('/api/exercise/dispute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        text_ba: current.text_ba,
+                        translation: value,
+                        lang_pair: 'ba-ru',
+                    }),
+                });
+                if (!res.ok) throw new Error('Ошибка ' + res.status);
+                closeModal();
+                feedbackEl.className = 'feedback show ok';
+                feedbackEl.textContent = 'Спасибо! Ваш вариант отправлен на проверку.';
+            } catch (err) {
+                feedbackEl.className = 'feedback show err';
+                feedbackEl.textContent = 'Не удалось отправить: ' + err.message;
+            } finally {
+                disputeSend.disabled = false;
+                disputeSend.textContent = 'Отправить';
+            }
+        });
+
+        nextBtn.addEventListener('click', load);
         load();
     </script>
 
