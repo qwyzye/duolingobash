@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS users (
     city TEXT,
     school TEXT,
     grade TEXT,
+    streak_days INTEGER NOT NULL DEFAULT 0,
+    last_activity_date TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     last_login_at TEXT
 );

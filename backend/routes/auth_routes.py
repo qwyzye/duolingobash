@@ -139,7 +139,9 @@ def leaderboard_page():
 from backend.sources_db import (
     get_connection,
     random_fragment,
-    random_translations,
+    get_confirmed_translation,
+    random_distractors,
+    save_dispute,
 )
 
 
@@ -149,16 +151,24 @@ def random_exercise(
     db: sqlite3.Connection = Depends(get_db),
 ):
     from backend.learned import get_learned_ids, record_seen
-    from backend.sources_db import random_fragment_weighted, random_translations
+    from backend.sources_db import (
+        get_connection, random_fragment, get_confirmed_translation,
+        random_distractors,
+    )
 
     learned = get_learned_ids(db, user_id)
 
     conn = get_connection()
     try:
-        frag = random_fragment_weighted(conn, learned)
+        frag = random_fragment(conn)
         if frag is None:
-            return JSONResponse({"detail": "No fragments in sources.db"}, status_code=404)
-        distractors = random_translations(
+            return JSONResponse({"detail": "No confirmed fragments"}, status_code=404)
+
+        best = get_confirmed_translation(conn, frag["fragment_id"], frag["lang_pair"])
+        if best is None:
+            return JSONResponse({"detail": "No translation"}, status_code=404)
+
+        distractors = random_distractors(
             conn, frag["fragment_id"], frag["lang_pair"], limit=3
         )
     finally:
@@ -168,16 +178,15 @@ def random_exercise(
     while len(distractors) < 3:
         distractors.append(fallback.pop())
 
-    options = distractors + [frag["translation"]]
+    options = distractors + [best["translation"]]
     random.shuffle(options)
 
-    # Фиксируем показ слова
     record_seen(db, user_id, frag["fragment_id"])
 
     return {
         "fragment_id": frag["fragment_id"],
         "text_ba": frag["text_ba"],
-        "translation": frag["translation"],
+        "translation": best["translation"],
         "options": options,
     }
 
@@ -196,17 +205,13 @@ def me(request: Request, db: sqlite3.Connection = Depends(get_db)):
 
     row = db.execute(
         "SELECT id, username, level, points, city, school, grade, "
-        "created_at, last_login_at "
+        "streak_days, last_activity_date, created_at, last_login_at "
         "FROM users WHERE id = ?",
         (user_id,),
     ).fetchone()
     if not row:
         return JSONResponse({"detail": "User not found"}, status_code=404)
-
-    data = dict(row)
-    # streak_days в схеме users нет — считаем заглушкой 0, позже добавите
-    data["streak_days"] = 0
-    return data
+    return dict(row)
 
 
 @router.get("/api/word-of-day")
@@ -225,25 +230,29 @@ def word_of_day(user_id: int = Depends(current_user_id)):
     }
 
 class DisputeIn(BaseModel):
+    fragment_id: int
     text_ba: str = Field(min_length=1, max_length=1000)
     translation: str = Field(min_length=1, max_length=2000)
     lang_pair: str = Field(default="ba-ru", pattern=r"^[a-z]{2}-[a-z]{2}$")
 
+
 @router.post("/api/exercise/dispute", status_code=201)
 def dispute_translation(data: DisputeIn, user_id: int = Depends(current_user_id)):
-    from backend.sources_db import add_disputed
+    from backend.sources_db import get_connection, save_dispute
     conn = get_connection()
     try:
-        item = add_disputed(
+        tid = save_dispute(
             conn,
-            text_ba=data.text_ba,
+            fragment_id=data.fragment_id,
+            user_id=user_id,
             translation=data.translation,
             lang_pair=data.lang_pair,
-            source=f"user:{user_id}",
+            text_ba=data.text_ba,
+            source="site",
         )
     finally:
         conn.close()
-    return item
+    return {"translation_id": tid}
 
 class AnswerIn(BaseModel):
     fragment_id: int

@@ -1,7 +1,7 @@
 # app/auth.py
 import bcrypt
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 import sqlite3
 
 def register_user(
@@ -61,3 +61,37 @@ def get_user_by_token(conn: sqlite3.Connection, token: str) -> int | None:
         conn.commit()
         return None
     return row["user_id"]
+
+
+
+
+def update_streak(conn: sqlite3.Connection, user_id: int) -> int:
+    """Обновляет серию пользователя. Возвращает актуальное значение."""
+    row = conn.execute(
+        "SELECT streak_days, last_activity_date FROM users WHERE id = ?",
+        (user_id,),
+    ).fetchone()
+    if not row:
+        return 0
+
+    today = date.today()
+    last = row["last_activity_date"]
+    streak = row["streak_days"] or 0
+
+    if last == today.isoformat():
+        # Уже заходил сегодня — ничего не меняем
+        return streak
+
+    if last == (today - timedelta(days=1)).isoformat():
+        # Заходил вчера — серия продолжается
+        streak += 1
+    else:
+        # Пропуск или первый заход — начинаем заново
+        streak = 1
+
+    conn.execute(
+        "UPDATE users SET streak_days = ?, last_activity_date = ? WHERE id = ?",
+        (streak, today.isoformat(), user_id),
+    )
+    conn.commit()
+    return streak

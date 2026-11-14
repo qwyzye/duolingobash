@@ -176,9 +176,11 @@ async function loadMe() {
     $('profile-level').textContent = 'Уровень ' + (me.level ?? 1);
     $('profile-avatar').textContent = initials(me.username);
     $('greeting-name').textContent = me.username || 'друг';
+
     const streak = me.streak_days ?? 0;
     $('streak-title').textContent = streak + ' ' + pluralDays(streak);
     $('streak-card-text').textContent = 'Вы в ударе уже ' + streak + ' ' + pluralDays(streak);
+    renderStreak(streak);
 
     const authBox = $('auth-buttons');
     if (authBox) {
@@ -190,6 +192,7 @@ async function loadMe() {
     $('profile-name').textContent = 'Гость';
     $('profile-level').textContent = 'Не авторизован';
     $('profile-avatar').textContent = '?';
+    renderStreak(0);
   }
 }
 
@@ -249,17 +252,18 @@ async function loadWord() {
   } catch (e) { console.warn('word:', e); }
 }
 
-function renderStreak() {
+function renderStreak(streakDays) {
   const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   const today = new Date();
-  const dow = (today.getDay() + 6) % 7;
+  const dow = (today.getDay() + 6) % 7;   // 0 = понедельник
   const start = new Date(today);
   start.setDate(today.getDate() - dow);
 
   $('streak-days').innerHTML = labels.map((label, i) => {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
-    const done = i <= dow;
+    const daysAgo = dow - i;  // 0 = сегодня
+    const done = daysAgo >= 0 && daysAgo < streakDays;
     return `<div class="day ${done ? 'done' : ''}"><b>${done ? '✓' : d.getDate()}</b>${label}</div>`;
   }).join('');
 }
@@ -268,7 +272,6 @@ loadMe();
 loadQuiz();
 loadRanking();
 loadWord();
-renderStreak();
 </script>
 </body>
 </html>

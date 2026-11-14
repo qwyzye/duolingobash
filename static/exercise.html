@@ -227,7 +227,6 @@ footer .footer-links{display:flex;gap:22px;font-weight:600}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-
 const $ = (id) => document.getElementById(id);
 
 let current = null;
@@ -280,10 +279,10 @@ function renderAnswers(options){
   });
 }
 
-// ---------- выбор ответа: сразу показываем результат ----------
+// ---------- выбор ответа ----------
 async function chooseAnswer(label, chosen){
   if(!current)return;
-  if(document.querySelector('.answer.correct, .answer.wrong'))return; // уже ответили
+  if(document.querySelector('.answer.correct, .answer.wrong'))return;
 
   const correct = chosen === current.translation;
 
@@ -334,12 +333,7 @@ async function loadExercise(){
   }
 }
 
-// ---------- «Следующее» = перезагрузка страницы ----------
-$('next-btn').addEventListener('click',()=>{
-  window.location.reload();
-});
-
-// не отправляем форму по Enter — она ни к чему
+$('next-btn').addEventListener('click',()=>{window.location.reload();});
 $('answer-form').addEventListener('submit',(e)=>e.preventDefault());
 
 // ---------- оспаривание ----------
@@ -387,9 +381,10 @@ $('appeal-form').addEventListener('submit', async (e)=>{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        text_ba:current.text_ba,
-        translation:proposed,
-        lang_pair:'ba-ru'
+        fragment_id: current.fragment_id,
+        text_ba: current.text_ba,
+        translation: proposed,
+        lang_pair: 'ba-ru'
       })
     });
     $('appeal-form').reset();
@@ -403,7 +398,6 @@ $('appeal-form').addEventListener('submit', async (e)=>{
   }
 });
 
-// ---------- запуск ----------
 loadMe();
 loadProgress();
 loadExercise();
