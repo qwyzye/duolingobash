@@ -1,3 +1,4 @@
+import html
 import random
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
@@ -6,75 +7,73 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from handlers.ai import generate_task
-from handlers.db import get_user, update_progress, add_learned_word, get_user_words
+from handlers.db import get_or_create_user, update_progress, add_learned_word, get_user_words
 
 router = Router()
+
 
 class LessonState(StatesGroup):
     waiting_for_answer = State()
 
+
 @router.message(Command("lesson"))
 async def start_lesson(message: Message, state: FSMContext):
-    msg = await message.answer("⏳ Генерирую задание, подожди пару секунд...")
-    
-    user_data = get_user(message.from_user.id)
-    level = user_data.get('level', 1) if user_data else 1
-    known_words = get_user_words(message.from_user.id)
+    user = get_or_create_user(message.from_user.id, message.from_user.username, message.from_user.first_name)
+    level = user.get("level", 1) if user else 1
+    known = get_user_words(message.from_user.id)
 
-    task_types = [
-        "word_ru_bash",       # Перевод слова с ру на баш
-        "word_bash_ru",       # Перевод слова с баш на ру
-        "sentence_ru_bash",   # Перевод предложения с ру на баш
-        "sentence_bash_ru",   # Перевод предложения с баш на ру
-        "fill_blank",         # Вставить пропущенное слово
-        "make_sentence",      # Составить предложение из слов
-        "find_extra"          # Найти лишнее слово
-    ]
-    chosen_type = random.choice(task_types)
-    
-    task = await generate_task(chosen_type, level=level, known_words=known_words)
-    
+    msg = await message.answer("⏳ Генерирую задание...")
+    task_type = random.choice([
+        "word_ru_bash", "word_bash_ru", "sentence_ru_bash", "sentence_bash_ru",
+        "fill_blank", "make_sentence", "find_extra",
+    ])
+    task = await generate_task(task_type, level=level, known_words=known)
     if not task:
-        await msg.edit_text("❌ Ошибка генерации задания. Попробуй позже.")
+        await msg.edit_text("❌ Ошибка генерации задания. Попробуйте позже.")
         return
 
-    # Сохраняем в память
+    options = task.get("options") or []
     await state.update_data(
-        correct_answer=task.get('correct_answer'),
-        new_word=task.get('new_word')
+        correct_answer=task.get("correct_answer"),
+        new_word=task.get("new_word"),
+        options=options,
     )
     await state.set_state(LessonState.waiting_for_answer)
 
-    options = task.get('options', [])
-    keyboard = []
-    
+    kb = []
     if options:
-        random.shuffle(options) # Перемешиваем
-        for opt in options:
-            keyboard.append([InlineKeyboardButton(text=opt, callback_data=f"ans_{opt}")])
-    
-    markup = InlineKeyboardMarkup(inline_keyboard=keyboard) if keyboard else None
-    
-    await msg.edit_text(f"📝 Задание:\n\n{task.get('question')}", reply_markup=markup)
+        random.shuffle(options)
+        await state.update_data(options=options)
+        for i, opt in enumerate(options):
+            kb.append([InlineKeyboardButton(text=str(opt)[:60], callback_data=f"ans_{i}")])
+    markup = InlineKeyboardMarkup(inline_keyboard=kb) if kb else None
+
+    await msg.edit_text(f"📝 Задание:\n\n{html.escape(task.get('question', ''))}", reply_markup=markup)
+
 
 @router.callback_query(F.data.startswith("ans_"), LessonState.waiting_for_answer)
 async def check_answer(callback: CallbackQuery, state: FSMContext):
-    user_answer = callback.data.replace("ans_", "", 1) # Безопасное извлечение
-    
     data = await state.get_data()
-    correct_answer = data.get('correct_answer')
-    new_word = data.get('new_word')
-    
-    if correct_answer and user_answer.lower().strip() == correct_answer.lower().strip():
-        await callback.message.edit_text("✅ Правильно! Молодец. +10 очков.")
+    options = data.get("options") or []
+    correct = data.get("correct_answer")
+    new_word = data.get("new_word")
+
+    try:
+        idx = int(callback.data.split("_", 1)[1])
+        user_answer = options[idx]
+    except (IndexError, ValueError):
+        await callback.answer("Ошибка варианта. Попробуйте /lesson заново.", show_alert=True)
+        await state.clear()
+        return
+
+    if correct and str(user_answer).strip().lower() == str(correct).strip().lower():
+        await callback.message.edit_text("✅ Правильно! +10 очков.")
         update_progress(callback.from_user.id, 10)
-        
-        if new_word and new_word != "null" and new_word is not None:
-            add_learned_word(callback.from_user.id, new_word, correct_answer)
-            await callback.message.answer(f"📖 Слово «{new_word}» добавлено в твой словарь!")
-            
+        if new_word and new_word != "null":
+            add_learned_word(callback.from_user.id, new_word, correct)
+            await callback.message.answer(f"📖 Слово «{html.escape(str(new_word))}» добавлено в словарь.")
     else:
-        await callback.message.edit_text(f"❌ Неправильно.\nПравильный ответ: {correct_answer}")
-    
+        await callback.message.edit_text(f"❌ Неправильно.\nПравильный ответ: {html.escape(str(correct))}")
+
     await state.clear()
     await callback.answer()

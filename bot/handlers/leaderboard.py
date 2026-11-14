@@ -1,42 +1,53 @@
+import html
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from handlers.db import get_leaderboard, get_user
+from handlers.db import get_leaderboard, get_or_create_user
 from handlers.locales import get_text
 
 router = Router()
 
-def get_lb_kb(active="today", lang="ru"):
-    kb = [
-        [InlineKeyboardButton(text=get_text("tf_today", lang).capitalize() if active != "today" else f"✅ {get_text('tf_today', lang).capitalize()}", callback_data="lb_today"),
-         InlineKeyboardButton(text=get_text("tf_week", lang).capitalize() if active != "week" else f"✅ {get_text('tf_week', lang).capitalize()}", callback_data="lb_week")],
-        [InlineKeyboardButton(text=get_text("tf_month", lang).capitalize() if active != "month" else f"✅ {get_text('tf_month', lang).capitalize()}", callback_data="lb_month")],
-        [InlineKeyboardButton(text=get_text("btn_back", lang), callback_data="menu_main")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=kb)
 
-def format_lb(tf, lang):
+def _lang(user):
+    return user["lang_pair"].split("-")[-1] if user and user.get("lang_pair") else "ru"
+
+
+def _kb(active, lang):
+    def btn(key, tf):
+        text = get_text(key, lang).capitalize()
+        if active == tf:
+            text = f"✅ {text}"
+        return InlineKeyboardButton(text=text, callback_data=f"lb_{tf}")
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [btn("tf_today", "today"), btn("tf_week", "week")],
+        [btn("tf_month", "month"), btn("tf_year", "year")],
+        [InlineKeyboardButton(text=get_text("btn_back", lang), callback_data="menu_main")],
+    ])
+
+
+def _format(tf, lang):
     leaders = get_leaderboard(tf)
-    if not leaders: return get_text("top_empty", lang)
-    
-    tf_name = get_text(f"tf_{tf}", lang)
-    text = get_text("top_title", lang, tf=tf_name)
-    
+    if not leaders:
+        return get_text("top_empty", lang)
+    text = get_text("top_title", lang, tf=get_text(f"tf_{tf}", lang))
     medals = ["🥇", "🥈", "🥉"]
     for i, row in enumerate(leaders):
-        medal = medals[i] if i < 3 else f"{i+1}."
-        text += f"{medal} {row['first_name']} — {row['total_points']} pts\n"
+        prefix = medals[i] if i < 3 else f"{i + 1}."
+        text += f"{prefix} {html.escape(row['first_name'] or 'User')} — {row['total_points']} pts\n"
     return text
+
 
 @router.callback_query(F.data == "menu_top")
 async def show_top(callback: CallbackQuery):
-    user = get_user(callback.from_user.id)
-    lang = user['lang_pair'].split("-")[1] if user.get('lang_pair') else "ru"
-    await callback.message.edit_text(format_lb("today", lang), reply_markup=get_lb_kb("today", lang), parse_mode="HTML")
+    user = get_or_create_user(callback.from_user.id)
+    lang = _lang(user)
+    await callback.message.edit_text(_format("today", lang), reply_markup=_kb("today", lang), parse_mode="HTML")
+    await callback.answer()
+
 
 @router.callback_query(F.data.startswith("lb_"))
 async def switch_lb(callback: CallbackQuery):
-    user = get_user(callback.from_user.id)
-    lang = user['lang_pair'].split("-")[1] if user.get('lang_pair') else "ru"
-    tf = callback.data.split("_")[1]
-    await callback.message.edit_text(format_lb(tf, lang), reply_markup=get_lb_kb(tf, lang), parse_mode="HTML")
+    user = get_or_create_user(callback.from_user.id)
+    lang = _lang(user)
+    tf = callback.data.split("_", 1)[1]
+    await callback.message.edit_text(_format(tf, lang), reply_markup=_kb(tf, lang), parse_mode="HTML")
     await callback.answer()
