@@ -54,8 +54,18 @@ CREATE TABLE IF NOT EXISTS sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS learned_words (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    fragment_id INTEGER NOT NULL,
+    seen_count INTEGER NOT NULL DEFAULT 0,     -- сколько раз попадалось
+    correct_count INTEGER NOT NULL DEFAULT 0,  -- сколько раз ответил верно
+    learned_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, fragment_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
-
+CREATE INDEX IF NOT EXISTS idx_learned_user ON learned_words(user_id);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
 """

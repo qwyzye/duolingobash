@@ -144,22 +144,26 @@ from backend.sources_db import (
 
 
 @router.get("/api/exercise/random")
-def random_exercise(user_id: int = Depends(current_user_id)):
+def random_exercise(
+    user_id: int = Depends(current_user_id),
+    db: sqlite3.Connection = Depends(get_db),
+):
+    from backend.learned import get_learned_ids, record_seen
+    from backend.sources_db import random_fragment_weighted, random_translations
+
+    learned = get_learned_ids(db, user_id)
+
     conn = get_connection()
     try:
-        frag = random_fragment(conn)
+        frag = random_fragment_weighted(conn, learned)
         if frag is None:
-            return JSONResponse(
-                {"detail": "No fragments in sources.db"},
-                status_code=404,
-            )
+            return JSONResponse({"detail": "No fragments in sources.db"}, status_code=404)
         distractors = random_translations(
             conn, frag["fragment_id"], frag["lang_pair"], limit=3
         )
     finally:
         conn.close()
 
-    # Если фрагментов мало, дистракторов может не хватить — добиваем заглушками
     fallback = ["Нет перевода", "Другое значение", "Неизвестно"]
     while len(distractors) < 3:
         distractors.append(fallback.pop())
@@ -167,12 +171,16 @@ def random_exercise(user_id: int = Depends(current_user_id)):
     options = distractors + [frag["translation"]]
     random.shuffle(options)
 
+    # Фиксируем показ слова
+    record_seen(db, user_id, frag["fragment_id"])
+
     return {
         "fragment_id": frag["fragment_id"],
         "text_ba": frag["text_ba"],
-        "translation": frag["translation"],   # правильный ответ — для проверки на клиенте
+        "translation": frag["translation"],
         "options": options,
     }
+
 @router.get("/exercise", response_class=HTMLResponse)
 def exercise_page():
     return FileResponse(STATIC_DIR / "exercise.html")
@@ -236,3 +244,29 @@ def dispute_translation(data: DisputeIn, user_id: int = Depends(current_user_id)
     finally:
         conn.close()
     return item
+
+class AnswerIn(BaseModel):
+    fragment_id: int
+    correct: bool
+
+
+@router.post("/api/exercise/answer")
+def submit_answer(
+    data: AnswerIn,
+    user_id: int = Depends(current_user_id),
+    db: sqlite3.Connection = Depends(get_db),
+):
+    from backend.learned import record_correct, mark_learned
+
+    if data.correct:
+        record_correct(db, user_id, data.fragment_id)
+
+        # Если пользователь ответил верно 3+ раза — считаем слово изученным
+        row = db.execute(
+            "SELECT correct_count FROM learned_words WHERE user_id = ? AND fragment_id = ?",
+            (user_id, data.fragment_id),
+        ).fetchone()
+        if row and row["correct_count"] >= 3:
+            mark_learned(db, user_id, data.fragment_id)
+
+    return {"ok": True}

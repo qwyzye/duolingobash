@@ -1,196 +1,412 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Задание</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #111827; }
-        h1 { font-size: 20px; color: #6b7280; margin-bottom: 8px; }
-        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .sentence { font-size: 22px; line-height: 1.6; margin-bottom: 24px; }
-        .highlight { background: #fef3c7; border-bottom: 2px solid #f59e0b; padding: 2px 4px; border-radius: 4px; font-weight: 600; }
-        .question { font-size: 16px; color: #6b7280; margin-bottom: 12px; }
-        .options { display: grid; gap: 10px; }
-        .option { padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 16px; cursor: pointer; text-align: left; transition: all 0.15s; }
-        .option:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; }
-        .option.correct { border-color: #10b981; background: #ecfdf5; }
-        .option.wrong { border-color: #ef4444; background: #fef2f2; }
-        .option:disabled { cursor: not-allowed; }
-        .feedback { margin-top: 16px; padding: 12px; border-radius: 8px; display: none; }
-        .feedback.show { display: block; }
-        .feedback.ok { background: #ecfdf5; color: #065f46; }
-        .feedback.err { background: #fef2f2; color: #991b1b; }
-        .row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-        .next, .dispute-btn { padding: 12px 20px; border: 0; border-radius: 8px; font-size: 16px; cursor: pointer; }
-        .next { background: #3b82f6; color: #fff; display: none; }
-        .next.show { display: inline-block; }
-        .dispute-btn { background: #fff; color: #92400e; border: 1.5px solid #fbbf24; display: none; }
-        .dispute-btn.show { display: inline-block; }
-        .error { padding: 12px; background: #fee2e2; color: #b91c1c; border-radius: 6px; margin-bottom: 16px; }
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
-        .modal-backdrop.show { display: flex; }
-        .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 480px; width: 100%; }
-        .modal h2 { margin: 0 0 8px; font-size: 18px; }
-        .modal p { color: #6b7280; font-size: 14px; margin: 0 0 16px; }
-        .modal textarea { width: 100%; min-height: 90px; padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 16px; font-family: inherit; box-sizing: border-box; }
-        .modal textarea:focus { outline: none; border-color: #3b82f6; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
-        .modal-actions button { padding: 10px 16px; border-radius: 8px; border: 0; font-size: 15px; cursor: pointer; }
-        .btn-cancel { background: #f3f4f6; color: #374151; }
-        .btn-send { background: #f59e0b; color: #fff; }
-        .btn-send:disabled { background: #d1d5db; cursor: not-allowed; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Көшәк — Практикуемся в башкирском</title>
+<style>
+:root{
+  --page:#f4f8f3;--white:#fff;--ink:#203b34;--muted:#70877e;
+  --green:#21835f;--green-dark:#187a58;--green-soft:#def5d2;
+  --line:#dce8d9;--pale:#f3f7f2;--gold:#e9bd70;--gold-bg:#fff1d2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--page)}
+body{padding:0 4.4% 28px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--green);text-decoration:none}
+.topbar{height:88px;background:#fff;border-bottom:1px solid #e3ebe1;display:flex;align-items:center;padding:0 5.2%;gap:42px}
+.brand{display:flex;align-items:center;gap:30px;min-width:190px}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--green-soft)}
+.brand-name{font-size:23px;font-weight:700;line-height:1.1}
+.brand-sub{display:block;font-size:9px;color:#718276;margin-top:4px;font-weight:600}
+.nav{display:flex;align-items:center;gap:26px;white-space:nowrap;font-size:14px;font-weight:600}
+.nav a{color:#14845d;padding:12px 14px;border-radius:13px}
+.nav a.active{background:var(--green-soft)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:13px}
+.bell{font-size:22px;color:#172d42;border:0;background:transparent}
+.vline{height:30px;border-left:1px solid #e2e9e1}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;color:var(--green);font-size:12px}
+.user-meta{line-height:1.5;white-space:nowrap}
+.user-meta small{display:block;color:var(--muted)}
+main{max-width:1245px;margin:36px auto 0}
+.layout{display:grid;grid-template-columns:263px minmax(0,1fr);gap:30px}
+.back{font-size:14px;margin:0 0 28px}
+.sidebar-card{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px 18px;margin-bottom:32px}
+.eyebrow{font-size:10px;font-weight:700;color:#16875e}
+.sidebar-card h2{font-size:22px;line-height:1.4;margin:18px 0 16px}
+.sidebar-card p{font-size:13px;color:var(--muted);margin:0 0 18px}
+progress{width:100%;height:6px;border:0;border-radius:9px;overflow:hidden}
+progress::-webkit-progress-bar{background:#e7eee4;border-radius:9px}
+progress::-webkit-progress-value{background:var(--green);border-radius:9px}
+progress::-moz-progress-bar{background:var(--green)}
+.sidebar-title{font-size:10px;color:var(--muted);font-weight:700;margin:0 0 15px 4px}
+.task-list{list-style:none;padding:0;margin:0}
+.task-list li{height:49px;display:flex;align-items:center;padding:0 15px;font-size:14px;border-radius:13px;color:var(--ink);gap:18px}
+.task-list li.done:before{content:"✓";font-weight:bold;color:var(--green)}
+.task-list li.current{background:var(--green-soft);font-weight:700;color:#245044}
+.task-list li.current:before{content:"04";color:var(--green)}
+.task-list li:not(.done):not(.current){color:var(--muted);padding-left:15px}
+.more-tasks{font-size:12px;color:var(--muted);margin:24px 0 42px 15px}
+.tip{background:var(--gold-bg);border-radius:20px;padding:18px 17px;font-size:13px;line-height:1.45}
+.tip strong{display:block;color:#986400;margin-bottom:8px}
+.content-head{margin:0 0 29px}
+.breadcrumb{font-size:12px;color:var(--muted);margin:1px 0 25px}
+.content-head h1{font-size:31px;line-height:1.2;margin:0 0 10px;letter-spacing:-.4px}
+.content-head p{font-size:14px;color:var(--muted);margin:0}
+.task-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:23px}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.pill{background:var(--green-soft);color:#16865e;font-size:10px;font-weight:700;padding:8px 12px;border-radius:20px}
+.task-number{font-size:12px;color:var(--muted);font-weight:600}
+.word-box{background:var(--pale);border-radius:16px;padding:17px 19px 16px;margin-bottom:17px}
+.word-box small{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+.word-box strong{font-size:31px;color:var(--green);line-height:1.1}
+.question{font-size:21px;margin:0 0 18px}
+.instruction{font-size:14px;color:var(--muted);margin:0 0 23px}
+.answers{border:0;padding:0;margin:0;display:grid;gap:9px}
+.answers legend{position:absolute;clip:rect(0,0,0,0)}
+.answer{min-height:55px;border:1px solid var(--line);border-radius:13px;display:flex;align-items:center;padding:0 15px;gap:17px;font-size:15px;cursor:pointer;transition:.15s;position:relative}
+.answer input{position:absolute;opacity:0;pointer-events:none}
+.answer .num{color:var(--muted);font-size:14px;font-weight:600}
+.answer.selected{border:2px solid #138458;background:#eff8e9;padding:0 14px;font-weight:700}
+.answer.selected .num{color:var(--green)}
+.answer.selected:after{content:"✓";margin-left:auto;color:var(--green);font-weight:bold;font-size:17px}
+.answer.correct{border:2px solid #10b981;background:#ecfdf5;padding:0 14px;font-weight:700}
+.answer.wrong{border:2px solid #ef4444;background:#fef2f2;padding:0 14px;font-weight:700}
+.answer:has(input:disabled){cursor:default}
+.status{background:var(--green-soft);border-radius:13px;padding:15px;margin:22px 0 15px;font-size:13px;color:var(--muted);line-height:1.55;display:none}
+.status.show{display:block}
+.status.ok{background:#ecfdf5;color:#065f46}
+.status.err{background:#fef2f2;color:#991b1b}
+.status strong{color:#18875e;display:block;font-size:13px}
+.status.ok strong{color:#065f46}
+.status.err strong{color:#991b1b}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.btn{height:49px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--green);font-weight:700;font-size:13px}
+.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+.btn.primary:disabled{background:#9ca3af;border-color:#9ca3af;cursor:not-allowed}
+.btn.outline-gold{border-color:var(--gold);color:#a66b00;background:#fff}
+.btn:hover{filter:brightness(.98)}
+footer{max-width:1245px;margin:25px auto 0;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+footer p{margin:0}
+footer .footer-links{display:flex;gap:22px;font-weight:600}
+.appeal-layer{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:26px 4.1%;overflow:auto}
+.appeal-layer.open{display:flex}
+.backdrop{position:absolute;inset:0;background:rgba(248,251,247,.56);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.appeal-shell{position:relative;z-index:1;width:min(1265px,100%);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:40px;align-items:center}
+.appeal-left h1{font-size:23px;margin:0 0 28px}
+.appeal-panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:25px;position:relative}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:19px}
+.panel-heading h2{font-size:23px;margin:0}
+.close{font-size:23px;color:#698278;border:0;background:transparent;padding:0 0 0 10px;line-height:1}
+.context-box{background:var(--pale);border-radius:14px;padding:12px 15px;margin-bottom:20px}
+.context-box small{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
+.context-box strong{font-size:14px;color:var(--green)}
+.field-label{font-size:13px;font-weight:700;display:block;margin:0 0 10px}
+.appeal-panel select,.appeal-panel textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:13px 14px;font-size:13px;outline:none}
+.appeal-panel select{height:45px;margin-bottom:19px}
+.appeal-panel textarea{height:85px;resize:vertical;line-height:1.45}
+.label-row{display:flex;justify-content:space-between;align-items:center}
+.label-row small{font-size:10px;color:var(--muted);font-weight:400}
+.helper{font-size:12px;color:var(--muted);margin:17px 0 20px}
+.appeal-actions{display:grid;grid-template-columns:165px 1fr;gap:11px}
+.appeal-actions .btn{height:45px}
+.appeal-right{padding:55px 0 0}
+.right-eyebrow{font-size:11px;color:var(--green);font-weight:700;margin-bottom:26px}
+.feature{display:grid;grid-template-columns:28px 1fr;gap:16px;margin-bottom:26px}
+.feature-num{color:var(--green);font-size:14px;font-weight:700}
+.feature h3{font-size:16px;margin:0 0 7px}
+.feature p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;max-width:370px}
+.right-note{background:var(--green-soft);border-radius:14px;padding:12px 16px;color:#16865e;font-size:12px;line-height:1.45;margin-top:38px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#203b34;color:white;padding:12px 18px;border-radius:12px;z-index:40;font-size:13px;display:none;box-shadow:0 8px 30px #203b3430}
+.toast.show{display:block}
+[hidden]{display:none!important}
+@media(max-width:900px){
+ body{padding:0 18px 20px}.topbar{padding:0 18px;gap:12px}.brand{min-width:auto;gap:10px}.nav{gap:3px}.nav a{padding:10px 7px;font-size:12px}.top-right{gap:8px}
+ .layout{grid-template-columns:220px minmax(0,1fr);gap:18px}.content-head h1{font-size:27px}
+ .appeal-shell{gap:22px}.appeal-panel{padding:20px}.appeal-right{padding-top:48px}
+}
+@media(max-width:680px){
+ body{padding:0 12px 18px}.topbar{height:auto;min-height:72px;flex-wrap:wrap;padding:12px}.nav{order:3;width:100%;justify-content:space-between}.top-right{margin-left:auto}.user-meta{display:none}
+ .layout{display:block}.sidebar{display:none}.content-head{margin-top:20px}.content-head h1{font-size:25px}.task-card{padding:16px}.question{font-size:19px}
+ footer{display:block;line-height:1.8}.footer-links{margin-top:8px}
+ .appeal-layer{padding:16px;align-items:flex-start}.appeal-shell{display:block;margin:auto}.appeal-left h1{font-size:20px;margin:8px 0 15px}.appeal-panel{padding:18px}.appeal-panel .panel-heading h2{font-size:21px}
+ .appeal-right{padding:22px 8px 8px}.right-eyebrow{margin-bottom:16px}.feature{margin-bottom:17px}.right-note{margin-top:20px}
+ .appeal-actions{grid-template-columns:1fr}.appeal-actions .btn{height:44px}
+}
+</style>
 </head>
 <body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark"></div><div><div class="brand-name">Көшәк</div><span class="brand-sub">ШКОЛА ВОЗМОЖНОСТЕЙ</span></div></div>
+  <nav class="nav"><a href="/">Главная</a><a href="#">О школе</a><a class="active" href="/exercise">Учёба</a><a href="#">Школьная жизнь</a></nav>
+  <div class="top-right"><button class="bell" type="button" aria-label="Уведомления">♧</button><span class="vline"></span><span class="avatar" id="user-avatar">—</span><span class="user-meta"><strong id="user-name">Загрузка…</strong><small id="user-level">Уровень —</small></span><span style="color:#718276">⌄</span></div>
+</header>
 
-    <h1>Задание</h1>
-    <div id="error" class="error" style="display: none;"></div>
+<main id="task-page">
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="back"><a href="/">←　На главную</a></p>
+      <section class="sidebar-card">
+        <div class="eyebrow">БАШКИРСКИЙ · НАЧАЛЬНЫЙ</div>
+        <h2>Знакомство<br>и приветствия</h2>
+        <p><span id="done-count">0</span> из <span id="total-count">12</span> заданий выполнено</p>
+        <progress id="progress" value="0" max="12"></progress>
+      </section>
+      <div class="sidebar-title">ЗАДАНИЯ УРОКА</div>
+      <ul class="task-list">
+        <li class="done">Первое знакомство</li><li class="done">Доброе утро</li><li class="done">Как вас зовут?</li>
+        <li class="current">Приветствие</li><li>Вежливые слова</li><li>Новый разговор</li>
+      </ul>
+      <p class="more-tasks">Ещё 6 заданий в этом уроке</p>
+      <div class="tip"><strong>Ошибаться — это нормально</strong>Каждое задание — ещё один шаг к свободному разговору.</div>
+    </aside>
 
-    <div class="card" id="card">
-        <div class="sentence" id="sentence">Загрузка…</div>
-        <div class="question">Что означает выделенное слово?</div>
-        <div class="options" id="options"></div>
-        <div class="feedback" id="feedback"></div>
-        <div class="row">
-            <button class="next" id="next">Следующее задание →</button>
-            <button class="dispute-btn" id="dispute">Оспорить перевод</button>
-        </div>
-    </div>
+    <section class="lesson">
+      <div class="content-head">
+        <div class="breadcrumb">Учёба　/　Знакомство и приветствия</div>
+        <h1>Практикуемся в башкирском</h1>
+        <p>Маленький шаг — и вы уже знаете больше.</p>
+      </div>
+      <article class="task-card">
+        <div class="card-top"><span class="pill">ПЕРЕВОД СЛОВА</span><span class="task-number" id="task-number">№ —</span></div>
+        <div class="word-box"><small>Башкирский язык</small><strong id="task-word">Загрузка…</strong></div>
+        <h2 class="question">Что означает выделенное слово?</h2>
+        <p class="instruction">Выберите один вариант ответа</p>
+        <form id="answer-form">
+          <fieldset class="answers" id="answers">
+            <legend>Выберите один вариант ответа</legend>
+          </fieldset>
+          <div class="status" id="answer-status" role="status"></div>
+          <div class="actions">
+            <button class="btn primary" type="submit" id="next-btn" disabled>Следующее →</button>
+            <button class="btn outline-gold" type="button" id="appeal-open">Оспорить</button>
+          </div>
+        </form>
+      </article>
+    </section>
+  </div>
+</main>
 
-    <div class="modal-backdrop" id="modal">
-        <div class="modal">
-            <h2>Предложить свой перевод</h2>
-            <p>Ваш вариант попадёт в базу как непроверенный и будет рассмотрен.</p>
-            <textarea id="dispute-text" placeholder="Введите ваш вариант перевода…"></textarea>
-            <div class="modal-actions">
-                <button class="btn-cancel" id="dispute-cancel">Отмена</button>
-                <button class="btn-send" id="dispute-send">Отправить</button>
-            </div>
-        </div>
-    </div>
+<footer><p>© 2026 Школа «Көшәк» · Учимся с интересом, растём вместе.</p><div class="footer-links"><a href="#">Правила портала</a><a href="#">Служба поддержки</a></div></footer>
 
-    <script>
-        let current = null;
+<div class="appeal-layer" id="appeal-layer" aria-hidden="true">
+  <div class="backdrop" id="backdrop"></div>
+  <div class="appeal-shell" role="dialog" aria-modal="true" aria-labelledby="appeal-title">
+    <section class="appeal-left">
+      <h1>Если с заданием что-то не так</h1>
+      <div class="appeal-panel">
+        <div class="panel-heading"><h2 id="appeal-title">Оспорить задание</h2><button type="button" class="close" id="appeal-close" aria-label="Закрыть">×</button></div>
+        <div class="context-box"><small id="appeal-context-label">Задание</small><strong id="appeal-context">—</strong></div>
+        <form id="appeal-form">
+          <label class="field-label" for="reason">Что кажется неверным?</label>
+          <select id="reason" name="reason" required>
+            <option value="Возможен другой перевод">Возможен другой перевод</option>
+            <option value="Ошибка в формулировке">Ошибка в формулировке</option>
+            <option value="Неверный вариант ответа">Неверный вариант ответа</option>
+            <option value="Другая проблема">Другая проблема</option>
+          </select>
+          <div class="label-row"><label class="field-label" for="comment">Ваш комментарий</label><small>необязательно</small></div>
+          <textarea id="comment" name="comment" placeholder="Расскажите, что стоит исправить,&#10;или предложите свой перевод..."></textarea>
+          <p class="helper">Мы проверим задание. Ваш прогресс сохранится.</p>
+          <div class="appeal-actions"><button type="button" class="btn" id="appeal-cancel">Отмена</button><button type="submit" class="btn primary" id="appeal-submit">Отправить на проверку</button></div>
+        </form>
+      </div>
+    </section>
+    <aside class="appeal-right">
+      <div class="right-eyebrow">УНИВЕРСАЛЬНАЯ СТРУКТУРА</div>
+      <div class="feature"><span class="feature-num">01</span><div><h3>Любая формулировка</h3><p>Меняйте слово, фразу и вопрос. Длинный текст переносится, а карточка растёт по содержимому.</p></div></div>
+      <div class="feature"><span class="feature-num">02</span><div><h3>Нужное число ответов</h3><p>Редактируйте варианты; третий и четвёртый можно скрыть в свойствах карточки.</p></div></div>
+      <div class="feature"><span class="feature-num">03</span><div><h3>Понятный результат</h3><p>Один компонент для выбора, выбранного ответа и отправки на проверку.</p></div></div>
+      <div class="feature"><span class="feature-num">04</span><div><h3>Обратная связь рядом</h3><p>Кнопка «Оспорить» доступна в каждом состоянии. В обращении сохраняется контекст задания.</p></div></div>
+      <div class="right-note">Меняйте содержание, а не оформление —<br>все задания останутся в одном стиле.</div>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
 
-        const sentenceEl = document.getElementById('sentence');
-        const optionsEl = document.getElementById('options');
-        const feedbackEl = document.getElementById('feedback');
-        const nextBtn = document.getElementById('next');
-        const disputeBtn = document.getElementById('dispute');
-        const errorBox = document.getElementById('error');
-        const modal = document.getElementById('modal');
-        const disputeText = document.getElementById('dispute-text');
-        const disputeSend = document.getElementById('dispute-send');
-        const disputeCancel = document.getElementById('dispute-cancel');
+<script>
 
-        function escapeHtml(s) {
-            return String(s ?? '').replace(/[&<>"']/g, c => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            }[c]));
-        }
+const $ = (id) => document.getElementById(id);
 
-        async function load() {
-            errorBox.style.display = 'none';
-            feedbackEl.className = 'feedback';
-            feedbackEl.textContent = '';
-            nextBtn.classList.remove('show');
-            disputeBtn.classList.remove('show');
-            optionsEl.innerHTML = '';
-            sentenceEl.textContent = 'Загрузка…';
+let current = null;
 
-            try {
-                const res = await fetch('/api/exercise/random', { credentials: 'same-origin' });
-                if (res.status === 401) { window.location.href = '/login'; return; }
-                if (!res.ok) throw new Error('Ошибка ' + res.status);
+function escapeHTML(value){
+  return String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function initials(name){
+  const parts=String(name||'').trim().split(/\s+/);
+  if(parts.length>=2)return (parts[0][0]+parts[1][0]).toUpperCase();
+  return (name||'?').slice(0,2).toUpperCase();
+}
 
-                current = await res.json();
-                sentenceEl.innerHTML = `<span class="highlight">${escapeHtml(current.text_ba)}</span>`;
+async function api(path, options={}){
+  const res=await fetch(path,{credentials:'same-origin',...options});
+  if(res.status===401){window.location.href='/login';throw new Error('401');}
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json();
+}
 
-                current.options.forEach(opt => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option';
-                    btn.textContent = opt;
-                    btn.addEventListener('click', () => choose(btn, opt));
-                    optionsEl.appendChild(btn);
-                });
-            } catch (err) {
-                sentenceEl.textContent = '';
-                errorBox.textContent = 'Не удалось загрузить задание: ' + err.message;
-                errorBox.style.display = 'block';
-            }
-        }
+// ---------- шапка ----------
+async function loadMe(){
+  try{
+    const me=await api('/api/me');
+    $('user-avatar').textContent=initials(me.username);
+    $('user-name').textContent=me.username||'Пользователь';
+    $('user-level').textContent='Уровень '+(me.level??1);
+  }catch(e){console.warn('me:',e);}
+}
 
-        function choose(btn, opt) {
-            if (btn.disabled) return;
+// ---------- прогресс (заглушка) ----------
+function loadProgress(){
+  $('done-count').textContent='3';
+  $('total-count').textContent='12';
+  $('progress').value=3;
+  $('progress').max=12;
+}
 
-            const correct = opt === current.translation;
-            [...optionsEl.children].forEach(b => {
-                b.disabled = true;
-                if (b.textContent === current.translation) b.classList.add('correct');
-            });
-            if (!correct) btn.classList.add('wrong');
+// ---------- рендер вариантов ----------
+function renderAnswers(options){
+  const box=$('answers');
+  box.querySelectorAll('.answer').forEach(el=>el.remove());
+  options.forEach((opt,i)=>{
+    const label=document.createElement('label');
+    label.className='answer';
+    label.innerHTML='<input type="radio" name="answer" value="'+escapeHTML(opt)+'"><span class="num">'+(i+1)+'</span><span>'+escapeHTML(opt)+'</span>';
+    const input=label.querySelector('input');
+    input.addEventListener('change',()=>chooseAnswer(label,opt));
+    box.appendChild(label);
+  });
+}
 
-            feedbackEl.className = 'feedback show ' + (correct ? 'ok' : 'err');
-            feedbackEl.textContent = correct
-                ? 'Верно! «' + current.text_ba + '» — «' + current.translation + '»'
-                : 'Неверно. Правильный перевод: «' + current.translation + '»';
+// ---------- выбор ответа: сразу показываем результат ----------
+async function chooseAnswer(label, chosen){
+  if(!current)return;
+  if(document.querySelector('.answer.correct, .answer.wrong'))return; // уже ответили
 
-            nextBtn.classList.add('show');
-            // Кнопка «Оспорить» — в любом случае, но особенно уместна при ошибке
-            disputeBtn.classList.add('show');
-        }
+  const correct = chosen === current.translation;
 
-        // модалка
-        function openModal() {
-            disputeText.value = current && current.translation ? current.translation : '';
-            modal.classList.add('show');
-            disputeSend.disabled = false;
-            disputeText.focus();
-        }
-        function closeModal() {
-            modal.classList.remove('show');
-        }
+  $('answers').querySelectorAll('.answer').forEach(l=>{
+    const inp=l.querySelector('input');
+    inp.disabled=true;
+    const val=inp.value;
+    if(val===current.translation)l.classList.add('correct');
+    else if(l===label)l.classList.add('wrong');
+  });
 
-        disputeBtn.addEventListener('click', openModal);
-        disputeCancel.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  const status=$('answer-status');
+  status.className='status show '+(correct?'ok':'err');
+  status.innerHTML='<strong>'+(correct?'Верно!':'Неверно')+'</strong>'+
+    (correct
+      ? '«'+escapeHTML(current.text_ba)+'» — «'+escapeHTML(current.translation)+'»'
+      : 'Правильный перевод: «'+escapeHTML(current.translation)+'»');
 
-        disputeSend.addEventListener('click', async () => {
-            const value = disputeText.value.trim();
-            if (!value) { disputeText.focus(); return; }
+  $('next-btn').disabled=false;
 
-            disputeSend.disabled = true;
-            disputeSend.textContent = 'Отправка…';
+  try{
+    await api('/api/exercise/answer',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fragment_id:current.fragment_id,correct:correct})
+    });
+  }catch(err){console.warn('answer:',err);}
+}
 
-            try {
-                const res = await fetch('/api/exercise/dispute', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        text_ba: current.text_ba,
-                        translation: value,
-                        lang_pair: 'ba-ru',
-                    }),
-                });
-                if (!res.ok) throw new Error('Ошибка ' + res.status);
-                closeModal();
-                feedbackEl.className = 'feedback show ok';
-                feedbackEl.textContent = 'Спасибо! Ваш вариант отправлен на проверку.';
-            } catch (err) {
-                feedbackEl.className = 'feedback show err';
-                feedbackEl.textContent = 'Не удалось отправить: ' + err.message;
-            } finally {
-                disputeSend.disabled = false;
-                disputeSend.textContent = 'Отправить';
-            }
-        });
+// ---------- загрузка задания ----------
+async function loadExercise(){
+  $('next-btn').disabled=true;
+  $('answer-status').className='status';
+  $('answer-status').innerHTML='';
+  $('task-word').textContent='Загрузка…';
+  $('task-number').textContent='№ —';
 
-        nextBtn.addEventListener('click', load);
-        load();
-    </script>
+  try{
+    const q=await api('/api/exercise/random');
+    current=q;
+    $('task-word').textContent=q.text_ba;
+    $('task-number').textContent='№ '+String(q.fragment_id).padStart(2,'0');
+    renderAnswers(q.options);
+  }catch(e){
+    $('task-word').textContent='';
+    $('answer-status').className='status err show';
+    $('answer-status').innerHTML='<strong>Ошибка</strong>Не удалось загрузить задание: '+escapeHTML(e.message);
+  }
+}
 
+// ---------- «Следующее» = перезагрузка страницы ----------
+$('next-btn').addEventListener('click',()=>{
+  window.location.reload();
+});
+
+// не отправляем форму по Enter — она ни к чему
+$('answer-form').addEventListener('submit',(e)=>e.preventDefault());
+
+// ---------- оспаривание ----------
+const layer=$('appeal-layer');
+const toast=$('toast');
+let toastTimer;
+function showToast(msg){
+  toast.textContent=msg;toast.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3200);
+}
+function openAppeal(){
+  if(!current){showToast('Задание ещё не загружено');return;}
+  $('appeal-context-label').textContent='Задание № '+String(current.fragment_id).padStart(2,'0')+' · Перевод слова';
+  $('appeal-context').textContent=current.text_ba+' → '+current.translation;
+  layer.classList.add('open');
+  layer.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  $('reason').focus();
+}
+function closeAppeal(){
+  layer.classList.remove('open');
+  layer.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  $('appeal-open').focus();
+}
+$('appeal-open').addEventListener('click',openAppeal);
+$('appeal-close').addEventListener('click',closeAppeal);
+$('appeal-cancel').addEventListener('click',closeAppeal);
+$('backdrop').addEventListener('click',closeAppeal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&layer.classList.contains('open'))closeAppeal()});
+
+$('appeal-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(!current)return;
+
+  const comment=$('comment').value.trim();
+  const reason=$('reason').value;
+  const proposed=comment||('Оспорено: '+reason);
+
+  $('appeal-submit').disabled=true;
+  $('appeal-submit').textContent='Отправка…';
+
+  try{
+    await api('/api/exercise/dispute',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        text_ba:current.text_ba,
+        translation:proposed,
+        lang_pair:'ba-ru'
+      })
+    });
+    $('appeal-form').reset();
+    closeAppeal();
+    showToast('Обращение отправлено на проверку.');
+  }catch(err){
+    showToast('Не удалось отправить: '+err.message);
+  }finally{
+    $('appeal-submit').disabled=false;
+    $('appeal-submit').textContent='Отправить на проверку';
+  }
+});
+
+// ---------- запуск ----------
+loadMe();
+loadProgress();
+loadExercise();
+</script>
 </body>
 </html>

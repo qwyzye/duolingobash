@@ -140,3 +140,35 @@ def add_disputed(
     )
     conn.commit()
     return get(conn, cur.lastrowid)
+
+def random_fragment_weighted(
+    conn: sqlite3.Connection,
+    learned_fragment_ids: set[int],
+    learned_weight: int = 1,
+    fresh_weight: int = 5,
+) -> Optional[dict]:
+    """Выбирает фрагмент с приоритетом неизученных.
+
+    Изученные слова попадаются реже (вес 1), новые — чаще (вес 5).
+    Простая реализация: берём случайный фрагмент, но с вероятностью
+    80% предпочитаем тот, которого нет в learned_fragment_ids.
+    """
+    if learned_fragment_ids:
+        placeholders = ",".join("?" for _ in learned_fragment_ids)
+        row = conn.execute(
+            f"SELECT {_COLUMNS} FROM fragments "
+            f"WHERE status = 'confirmed' AND fragment_id NOT IN ({placeholders}) "
+            "ORDER BY RANDOM() LIMIT 1",
+            tuple(learned_fragment_ids),
+        ).fetchone()
+        if row:
+            # 80% шанс взять новое слово, 20% — изученное
+            import random as _r
+            if _r.random() < 0.8:
+                return dict(row)
+    # fallback — любое подтверждённое (включая изученные)
+    row = conn.execute(
+        f"SELECT {_COLUMNS} FROM fragments "
+        "WHERE status = 'confirmed' ORDER BY RANDOM() LIMIT 1"
+    ).fetchone()
+    return dict(row) if row else None
