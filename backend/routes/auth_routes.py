@@ -152,33 +152,71 @@ def random_exercise(
 ):
     from backend.learned import get_learned_ids, record_seen
     from backend.sources_db import (
-        get_connection, random_fragment, get_confirmed_translation,
-        random_distractors,
+        get_connection,
+        random_short_fragment,
+        random_short_distractors,
+        get_or_create_translation_with_ai,
     )
 
     learned = get_learned_ids(db, user_id)
 
     conn = get_connection()
     try:
-        frag = random_fragment(conn)
+        frag = random_short_fragment(conn, exclude_ids=learned)
+    finally:
+        conn.close()
+
+    if frag is None:
+        return JSONResponse({"detail": "No fragments in content.db"}, status_code=404)
+
+    # до 3 попыток: если AI не даёт перевод — берём другой фрагмент
+    translation = None
+    tried = set()
+    for _ in range(3):
+        if frag["fragment_id"] in tried:
+            conn = get_connection()
+            try:
+                frag = random_short_fragment(
+                    conn, exclude_ids=learned | tried
+                )
+            finally:
+                conn.close()
+            if frag is None:
+                break
+            continue
+        tried.add(frag["fragment_id"])
+        translation = get_or_create_translation_with_ai(
+            frag["fragment_id"], frag["text_ba"], frag["lang_pair"]
+        )
+        if translation:
+            break
+        conn = get_connection()
+        try:
+            frag = random_short_fragment(conn, exclude_ids=learned | tried)
+        finally:
+            conn.close()
         if frag is None:
-            return JSONResponse({"detail": "No confirmed fragments"}, status_code=404)
+            break
 
-        best = get_confirmed_translation(conn, frag["fragment_id"], frag["lang_pair"])
-        if best is None:
-            return JSONResponse({"detail": "No translation"}, status_code=404)
+    if not translation:
+        return JSONResponse(
+            {"detail": "AI translation failed (Gemini недоступен)"},
+            status_code=503,
+        )
 
-        distractors = random_distractors(
+    conn = get_connection()
+    try:
+        distractors = random_short_distractors(
             conn, frag["fragment_id"], frag["lang_pair"], limit=3
         )
     finally:
         conn.close()
 
-    fallback = ["Нет перевода", "Другое значение", "Неизвестно"]
+    fallback = ["Другое значение", "Неизвестно", "Не подходит"]
     while len(distractors) < 3:
         distractors.append(fallback.pop())
 
-    options = distractors + [best["translation"]]
+    options = distractors + [translation]
     random.shuffle(options)
 
     record_seen(db, user_id, frag["fragment_id"])
@@ -186,7 +224,7 @@ def random_exercise(
     return {
         "fragment_id": frag["fragment_id"],
         "text_ba": frag["text_ba"],
-        "translation": best["translation"],
+        "translation": translation,
         "options": options,
     }
 
@@ -238,13 +276,12 @@ class DisputeIn(BaseModel):
 
 @router.post("/api/exercise/dispute", status_code=201)
 def dispute_translation(data: DisputeIn, user_id: int = Depends(current_user_id)):
-    from backend.sources_db import get_connection, save_dispute
     conn = get_connection()
     try:
         tid = save_dispute(
             conn,
             fragment_id=data.fragment_id,
-            user_id=user_id,
+            user_id=user_id,             # ← это users.id (не telegram_id)
             translation=data.translation,
             lang_pair=data.lang_pair,
             text_ba=data.text_ba,
@@ -259,23 +296,50 @@ class AnswerIn(BaseModel):
     correct: bool
 
 
+@router.get("/api/exercise/status")
+def exercise_status(
+    user_id: int = Depends(current_user_id),
+    db: sqlite3.Connection = Depends(get_db),
+):
+    """Возвращает: { completed: [fragment_id, ...], correct_count: {fid: n}, points, level }"""
+    rows = db.execute(
+        "SELECT fragment_id, correct_count FROM learned_words WHERE user_id = ?",
+        (user_id,),
+    ).fetchall()
+    completed = [r["fragment_id"] for r in rows if r["correct_count"] > 0]
+    correct_count = {r["fragment_id"]: r["correct_count"] for r in rows}
+
+    user = db.execute(
+        "SELECT points, level FROM users WHERE id = ?", (user_id,)
+    ).fetchone()
+
+    return {
+        "completed": completed,
+        "correct_count": correct_count,
+        "points": user["points"] if user else 0,
+        "level": user["level"] if user else 1,
+    }
+
 @router.post("/api/exercise/answer")
 def submit_answer(
     data: AnswerIn,
     user_id: int = Depends(current_user_id),
     db: sqlite3.Connection = Depends(get_db),
 ):
-    from backend.learned import record_correct, mark_learned
+    from backend.learned import record_correct, mark_learned, award_points_event
 
-    if data.correct:
-        record_correct(db, user_id, data.fragment_id)
+    if not data.correct:
+        return {"ok": True}
 
-        # Если пользователь ответил верно 3+ раза — считаем слово изученным
-        row = db.execute(
-            "SELECT correct_count FROM learned_words WHERE user_id = ? AND fragment_id = ?",
-            (user_id, data.fragment_id),
-        ).fetchone()
-        if row and row["correct_count"] >= 3:
-            mark_learned(db, user_id, data.fragment_id)
+    record_correct(db, user_id, data.fragment_id)
+    award_points_event(db, user_id, "web_answer", f"{data.fragment_id}", 10)
+
+    row = db.execute(
+        "SELECT correct_count FROM learned_words "
+        "WHERE user_id = ? AND fragment_id = ?",
+        (user_id, data.fragment_id),
+    ).fetchone()
+    if row and row["correct_count"] >= 3:
+        mark_learned(db, user_id, data.fragment_id)
 
     return {"ok": True}

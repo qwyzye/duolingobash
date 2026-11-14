@@ -211,7 +211,6 @@ if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#f7faf2'
 const hap=t=>{if(!state.vib)return;try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred(t)}catch(e){}};
 const tap=()=>{if(!state.vib)return;try{tg&&tg.HapticFeedback&&tg.HapticFeedback.selectionChanged()}catch(e){}};
 
-// Статика на случай, если ИИ не ответит — fallback.
 const LESSONS=[
 {t:"Привет",p:[["Сәләм","Привет"],["Рәхмәт","Спасибо"],["Эйе","Да"],["Юҡ","Нет"],["Һау бул","До свидания"]]},
 {t:"Знакомство",p:[["Мин","Я"],["Һин","Ты"],["Дуҫ","Друг"],["Исем","Имя"],["Һаумыһығыҙ","Здравствуйте"]]},
@@ -221,7 +220,7 @@ const LESSONS=[
 {t:"Цвета",p:[["Ҡыҙыл","Красный"],["Йәшел","Зелёный"],["Һары","Жёлтый"],["Зәңгәр","Синий"],["Аҡ","Белый"]]}
 ];
 const TODAY=()=>new Date().toDateString();
-let state={xp:0,days:0,words:0,done:[],last:"",hearts:5,hAt:0,seen:false,goal:20,snd:true,vib:true,dq:{d:"",xp:0,les:0,perf:0,claimed:[]},chest:[]};
+let state={xp:0,level:1,days:0,words:0,done:[],last:"",hearts:5,hAt:0,seen:false,goal:20,snd:true,vib:true,dq:{d:"",xp:0,les:0,perf:0,claimed:[]},chest:[]};
 try{Object.assign(state,JSON.parse(localStorage.getItem("bash_state")||"{}"))}catch(e){}
 if(!Array.isArray(state.done))state.done=state.done?[0]:[];
 const save=()=>{try{localStorage.setItem("bash_state",JSON.stringify(state))}catch(e){}};
@@ -232,7 +231,6 @@ function beep(f,t){if(!state.snd)return;try{const c=beep.c||(beep.c=new(window.A
 
 const LPs=new URLSearchParams(location.search).get("l"),LP=LPs===null?null:+LPs;
 
-// fallback-вопросы на случай недоступности ИИ
 let QUESTIONS=[];
 if(LP!==null&&LESSONS[LP]){
   const P=LESSONS[LP].p;
@@ -264,7 +262,6 @@ async function loadQuestionsFromAI(){
 }
 
 async function startLesson(){
-  // спиннер пока грузим
   show("s-quiz");
   $("q-word").textContent = "…";
   $("q-opts").innerHTML = "";
@@ -351,41 +348,53 @@ function check(){
   }
 }
 
-function finish(){
-  const xp = correct*2+3, d = dq();
-  state.xp += xp; d.xp += xp; d.les++; if(mistakes===0) d.perf++;
+async function finish(){
+  const xp = correct*2+3;
+  const d = dq();
+  d.les++; if(mistakes===0) d.perf++;
   if(!state.done.includes(LP)) state.done.push(LP);
   state.words = Math.max(state.words, state.done.length*5);
   const y = new Date(Date.now()-864e5).toDateString();
   if(state.last!==TODAY()){state.days=state.last===y?state.days+1:1;state.last=TODAY()}
   save();
 
+  let earnedXp = xp;
+
   if (tgUserId && LP !== null) {
-    fetch("/api/lesson/complete", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        user_id: tgUserId,
-        lesson_id: LP,
-        xp: xp,
-        correct: correct,
-        mistakes: mistakes,
-        username: tgUser.username || null,
-        first_name: tgUser.first_name || "User",
-      })
-    })
-    .then(r => r.json())
-    .then(d2 => {
-      if (typeof d2.xp === "number" && d2.xp > state.xp) { state.xp = d2.xp; }
-      if (Array.isArray(d2.done_lessons)) {
-        d2.done_lessons.forEach(id => { if(!state.done.includes(id)) state.done.push(id); });
+    try {
+      const r = await fetch("/api/lesson/complete", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          user_id: tgUserId,
+          lesson_id: LP,
+          xp: xp,
+          correct: correct,
+          mistakes: mistakes,
+          username: tgUser.username || null,
+          first_name: tgUser.first_name || "User",
+        })
+      });
+      if (r.ok) {
+        const d2 = await r.json();
+        if (typeof d2.points === "number") state.xp = d2.points;
+        if (typeof d2.level === "number") state.level = d2.level;
+        if (Array.isArray(d2.done_lessons)) {
+          d2.done_lessons.forEach(id => { if(!state.done.includes(id)) state.done.push(id); });
+        }
+        if (d2.already_awarded) earnedXp = 0;
       }
-      save();
-    })
-    .catch(e => console.warn("lesson sync failed", e));
+    } catch (e) {
+      console.warn("lesson sync failed", e);
+    }
+  } else {
+    state.xp += xp;
+    state.level = Math.floor(state.xp / 100) + 1;
   }
 
-  $("d-xp").textContent = "+"+xp+" XP";
+  save();
+
+  $("d-xp").textContent = earnedXp ? "+"+earnedXp+" XP" : "Уже начислено";
   $("d-res").textContent = correct+" из "+QUESTIONS.length+" с первого раза";
   hap("success");
   show("s-done");
@@ -424,6 +433,12 @@ if (tgUserId) {
       username: tgUser.username || null,
       first_name: tgUser.first_name || "User",
     })
+  }).then(r => r.json()).then(d => {
+    if (d.progress && typeof d.progress.xp === "number") {
+      state.xp = d.progress.xp;
+      state.level = d.progress.level || 1;
+      save();
+    }
   }).catch(e => console.warn("auth failed", e));
 }
 

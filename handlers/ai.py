@@ -163,3 +163,12 @@ async def generate_lesson_questions(lesson_id: int, level: int = 1, count: int =
         logger.warning("generate_lesson_questions: too few valid questions (%d)", len(out))
         return None
     return out[:count]
+async def translate_fragment(text_ba: str) -> str | None:
+    """Перевод фрагмента ba→ru через Gemini. Возвращает строку или None."""
+    from handlers.prompts import SITE_TRANSLATE_PROMPT
+    prompt = SITE_TRANSLATE_PROMPT.format(text_ba=text_ba)
+    data = await _request_ai(prompt, expect_schema={"translation": str})
+    if not data:
+        return None
+    t = (data.get("translation") or "").strip()
+    return t or None

@@ -1,17 +1,11 @@
-# app/auth.py
+"""Аутентификация сайта: app.db, users.id."""
 import bcrypt
 import secrets
-from datetime import datetime, timedelta,date
 import sqlite3
+from datetime import datetime, timedelta, date
 
-def register_user(
-    conn: sqlite3.Connection,
-    username: str,
-    password: str,
-    city: str | None = None,
-    school: str | None = None,
-    grade: str | None = None,
-) -> int | None:
+
+def register_user(conn, username, password, city=None, school=None, grade=None):
     pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     try:
         cur = conn.execute(
@@ -24,19 +18,20 @@ def register_user(
     except sqlite3.IntegrityError:
         return None
 
-def authenticate(conn: sqlite3.Connection, username: str, password: str) -> int | None:
+
+def authenticate(conn, username, password):
     row = conn.execute(
         "SELECT id, password_hash FROM users WHERE username = ?", (username,)
     ).fetchone()
-    if not row:
-        # Защита от тайминг-атак: всё равно считаем хеш
+    if not row or not row["password_hash"]:
         bcrypt.checkpw(password.encode(), bcrypt.hashpw(b"x", bcrypt.gensalt()))
         return None
     if not bcrypt.checkpw(password.encode(), row["password_hash"].encode()):
         return None
     return row["id"]
 
-def create_session(conn: sqlite3.Connection, user_id: int) -> str:
+
+def create_session(conn, user_id):
     token = secrets.token_urlsafe(32)
     expires = (datetime.utcnow() + timedelta(days=30)).isoformat()
     conn.execute(
@@ -50,7 +45,8 @@ def create_session(conn: sqlite3.Connection, user_id: int) -> str:
     conn.commit()
     return token
 
-def get_user_by_token(conn: sqlite3.Connection, token: str) -> int | None:
+
+def get_user_by_token(conn, token):
     row = conn.execute(
         "SELECT user_id, expires_at FROM sessions WHERE token = ?", (token,)
     ).fetchone()
@@ -63,10 +59,7 @@ def get_user_by_token(conn: sqlite3.Connection, token: str) -> int | None:
     return row["user_id"]
 
 
-
-
-def update_streak(conn: sqlite3.Connection, user_id: int) -> int:
-    """Обновляет серию пользователя. Возвращает актуальное значение."""
+def update_streak(conn, user_id):
     row = conn.execute(
         "SELECT streak_days, last_activity_date FROM users WHERE id = ?",
         (user_id,),
@@ -79,14 +72,10 @@ def update_streak(conn: sqlite3.Connection, user_id: int) -> int:
     streak = row["streak_days"] or 0
 
     if last == today.isoformat():
-        # Уже заходил сегодня — ничего не меняем
         return streak
-
     if last == (today - timedelta(days=1)).isoformat():
-        # Заходил вчера — серия продолжается
         streak += 1
     else:
-        # Пропуск или первый заход — начинаем заново
         streak = 1
 
     conn.execute(
