@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Башҡортса өйрән</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7faf2;--green:#178553;--green-d:#0f6b42;--ink:#0f3a28;--muted:#7d9387;--ok:#e7f4d8;--ok-b:#bfdcca;--lime:#ddf59c;--off:#e4eadc;--off-t:#8da093}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg{display:block}
+#app{height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px}
+.chip{display:flex;align-items:center;gap:6px;background:#fff;border-radius:99px;padding:8px 12px;font-size:13px;font-weight:800}
+.gear{width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+main{flex:1;overflow-y:auto;padding:0 20px 24px}
+.pg{display:none}.pg.on{display:block;animation:in .2s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tag{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--green)}
+h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
+.card{background:#fff;border-radius:16px;padding:14px 16px;margin-top:12px}
+.sec{background:var(--green);color:#fff;border-radius:16px;padding:14px 16px;margin-top:16px}
+.sec small{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--lime)}
+.sec b{display:block;font-size:17px;margin-top:4px}.sec span{font-size:11px;opacity:.85}
+.path{padding:6px 0 4px}
+.row{position:relative;display:flex;justify-content:center;margin:14px 0}
+.nw{display:flex;flex-direction:column;align-items:center;position:relative}
+.nd{width:68px;height:62px;border-radius:22px;display:flex;align-items:center;justify-content:center;transition:transform .08s,box-shadow .08s}
+.nd:active{transform:translateY(4px);box-shadow:none!important}
+.nd.done{background:var(--green);color:#fff;box-shadow:0 5px 0 var(--green-d)}
+.nd.cur{background:var(--lime);color:var(--green-d);box-shadow:0 5px 0 #b3d36a}
+.nd.lock{background:var(--off);color:var(--off-t);box-shadow:0 5px 0 #cdd6c6}
+.nd.rdy{background:var(--lime);box-shadow:0 5px 0 #b3d36a;animation:bn 1.2s infinite}
+.nd.opn{background:var(--ok);box-shadow:0 5px 0 var(--ok-b);color:var(--green)}
+@keyframes bn{50%{transform:translateY(-5px)}}
+.lb{font-size:11px;font-weight:700;margin-top:10px;color:var(--ink)}.lb.m{color:var(--muted);font-weight:500}
+.go{position:absolute;top:-30px;background:#fff;color:var(--green);font-size:11px;font-weight:800;padding:4px 10px;border-radius:10px;box-shadow:0 3px 10px rgba(15,58,40,.12);animation:bn 1.4s infinite}
+.go:after{content:"";position:absolute;bottom:-4px;left:50%;margin-left:-4px;border:4px solid transparent;border-top-color:#fff;border-bottom:0}
+.fox{position:absolute;top:-10px;width:78px}
+.ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none}
+.q{display:flex;align-items:center;gap:12px;margin-top:14px}
+.q b{font-size:13px;display:block}.q i{display:block;height:8px;border-radius:99px;background:#e6eddd;margin-top:8px;overflow:hidden}.q i u{display:block;height:100%;background:var(--green);border-radius:99px}
+.q button{background:var(--green);color:#fff;font-size:11px;font-weight:800;padding:8px 10px;border-radius:10px;flex:none}
+.q em{font-style:normal;font-size:11px;color:var(--green);font-weight:800;flex:none}
+.lg{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;background:#fff;margin-top:8px;font-size:14px;font-weight:700}
+.lg.me{background:var(--ok);border:2px solid var(--green)}
+.lg .n{width:26px;height:26px;border-radius:50%;background:#f1f5ec;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted)}
+.lg .n.t{background:var(--lime);color:var(--green-d)}.lg span{flex:1}.lg em{font-style:normal;font-size:12px;color:var(--muted)}
+.hero{width:150px;height:150px;border-radius:50%;background:var(--lime);margin:16px auto 0;display:flex;align-items:center;justify-content:center}.hero img{width:78%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.grid div{background:#fff;border-radius:14px;padding:12px 14px}.grid b{font-size:20px;display:block}.grid span{font-size:11px;color:var(--muted)}
+.bd{display:flex;gap:10px;margin-top:10px}.bd div{flex:1;background:#fff;border-radius:14px;padding:12px 6px;text-align:center;font-size:10px;font-weight:700}.bd div.off{opacity:.45}.bd svg{margin:0 auto 6px}
+.btn{width:100%;height:50px;border-radius:14px;background:var(--green);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}
+.btn.soft{background:var(--off);color:var(--ink)}.btn[disabled]{background:var(--off);color:var(--off-t)}
+.tabs{display:flex;background:#fff;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -1px 0 rgba(15,58,40,.06)}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;font-size:10px;font-weight:700;color:var(--muted)}
+.tabs button.on{background:var(--ok);color:var(--green)}
+#shade{position:absolute;inset:0;background:rgba(15,58,40,.35);display:none;align-items:flex-end;z-index:5}
+#shade.on{display:flex}
+#sheet{width:100%;background:var(--bg);border-radius:24px 24px 0 0;padding:18px 20px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease;max-height:88%;overflow-y:auto}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sh-h{display:flex;align-items:center;justify-content:space-between}
+.tg{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:14px 16px;margin-top:10px;font-size:14px;font-weight:700;width:100%}
+.sw{width:44px;height:26px;border-radius:99px;background:var(--off);position:relative;transition:.15s}.sw:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.15s}.sw.on{background:var(--green)}.sw.on:after{left:21px}
+.chips{display:flex;gap:8px;margin-top:10px}.chips button{flex:1;padding:12px 0;border-radius:12px;background:#fff;font-weight:800;font-size:13px;border:2px solid transparent}.chips button.on{background:var(--ok);border-color:var(--green)}
+.sf{display:flex;align-items:center;gap:14px}.sf img{width:84px}
+#toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12px;font-weight:600;padding:10px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;white-space:nowrap;z-index:9}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="hd">
+  <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="#e8742a"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3-1-4 0-7 1-10z"/></svg><span id="h-days">0</span></div>
+  <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="#178553"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span id="h-xp">0</span></div>
+  <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="#e5484d"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg><span id="h-hp">5</span></div>
+  <button class="gear" id="b-set" aria-label="Настройки"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+</div>
+<main>
+  <section class="pg on" id="p-learn"></section>
+  <section class="pg" id="p-quest"></section>
+  <section class="pg" id="p-league"></section>
+  <section class="pg" id="p-me"></section>
+</main>
+<nav class="tabs" id="tabs"></nav>
+<div id="shade"><div id="sheet"></div></div>
+<div id="toast"></div>
+</div>
+<script>
+const IMG = {
+  sad: "белка/01_Грустно.png",
+  angry: "белка/02_Злость.png",
+  ask: "белка/03_Вопросительно.png",
+  exc: "белка/04_Восклицательно.png",
+  happy: "белка/05_Весело.png",
+  disgusted: "белка/06_Отвратительно.png",
+  fear: "белка/07_Страх.png"
+};
+
+const LESSONS=[
+{t:"Привет",p:[["Сәләм","Привет"],["Рәхмәт","Спасибо"],["Эйе","Да"],["Юҡ","Нет"],["Һау бул","До свидания"]]},
+{t:"Знакомство",p:[["Мин","Я"],["Һин","Ты"],["Дуҫ","Друг"],["Исем","Имя"],["Һаумыһығыҙ","Здравствуйте"]]},
+{t:"Семья",p:[["Әсә","Мама"],["Атай","Папа"],["Ҡустым","Младший брат"],["Һеңлем","Младшая сестра"],["Өләсә","Бабушка"]]},
+{t:"Числа 1–5",p:[["Бер","Один"],["Ике","Два"],["Өс","Три"],["Дүрт","Четыре"],["Биш","Пять"]]},
+{t:"Числа 6–10",p:[["Алты","Шесть"],["Ете","Семь"],["Һигеҙ","Восемь"],["Туғыҙ","Девять"],["Ун","Десять"]]},
+{t:"Цвета",p:[["Ҡыҙыл","Красный"],["Йәшел","Зелёный"],["Һары","Жёлтый"],["Зәңгәр","Синий"],["Аҡ","Белый"]]}
+];
+const UNITS=[{t:"Приветствие",l:[0,1,2]},{t:"Числа и цвета",l:[3,4,5]}];
+const TODAY=()=>new Date().toDateString();
+let state={xp:0,days:0,words:0,done:[],last:"",hearts:5,hAt:0,seen:false,goal:20,snd:true,vib:true,dq:{d:"",xp:0,les:0,perf:0,claimed:[]},chest:[]};
+try{Object.assign(state,JSON.parse(localStorage.getItem("bash_state")||"{}"))}catch(e){}
+if(!Array.isArray(state.done))state.done=state.done?[0]:[];
+const save=()=>{try{localStorage.setItem("bash_state",JSON.stringify(state))}catch(e){}};
+const HM=1200000;
+function regen(){if(state.hearts>=5){state.hAt=Date.now();return}const n=Math.floor((Date.now()-state.hAt)/HM);if(n>0){state.hearts=Math.min(5,state.hearts+n);state.hAt=state.hearts>=5?Date.now():state.hAt+n*HM;save()}}
+function dq(){if(state.dq.d!==TODAY())state.dq={d:TODAY(),xp:0,les:0,perf:0,claimed:[]};return state.dq}
+function beep(f,t){if(!state.snd)return;try{const c=beep.c||(beep.c=new(window.AudioContext||window.webkitAudioContext)());const o=c.createOscillator(),g=c.createGain();o.frequency.value=f||660;g.gain.value=.07;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+(t||.12))}catch(e){}}
+
+const $=id=>document.getElementById(id);
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#f7faf2');tg.setBackgroundColor&&tg.setBackgroundColor('#f7faf2')}catch(e){}}
+const hap=()=>{if(!state.vib)return;try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred("light")}catch(e){}};
+const ic=(d,w)=>`<svg width="${w||26}" height="${w||26}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const I={chk:ic('<path d="M5 12l5 5 9-10"/>'),star:ic('<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'),lock:ic('<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',22),
+chest:ic('<path d="M4 11V8a8 8 0 0 1 16 0v3M3 11h18v9H3zM12 11v4"/>',28),x:ic('<path d="M6 6l12 12M18 6 6 18"/>',20)};
+const TABS=[["learn","Учиться",'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>'],["quest","Задания",'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>'],["league","Лига",'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/>'],["me","Профиль",'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>']];
+$("tabs").innerHTML=TABS.map(t=>`<button data-t="${t[0]}">${ic(t[2],22)}${t[1]}</button>`).join("");
+const user=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user,uname=(user&&user.first_name)||"Друг";
+let page="learn";
+const cur=()=>{for(let i=0;i<LESSONS.length;i++)if(!state.done.includes(i))return i;return -1};
+const toast=m=>{const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),1800)};
+const sheet=h=>{$("sheet").innerHTML=h;$("shade").classList.add("on")};
+const shut=()=>$("shade").classList.remove("on");
+const mins=()=>Math.max(1,Math.ceil((HM-(Date.now()-state.hAt))/60000));
+function hdr(){regen();$("h-days").textContent=state.days;$("h-xp").textContent=state.xp;$("h-hp").textContent=state.hearts}
+
+function learn(){
+  const c=cur();let h="",g=0;
+  UNITS.forEach((u,ui)=>{
+    const n=u.l.filter(i=>state.done.includes(i)).length;
+    h+=`<div class="sec"><small>РАЗДЕЛ ${ui+1}</small><b>${u.t}</b><span>${n} из ${u.l.length} уроков</span></div><div class="path">`;
+    u.l.forEach(i=>{
+      const st=state.done.includes(i)?"done":i===c?"cur":"lock",off=[0,44,64,44,0,-44,-64,-44][g++%8];
+      h+=`<div class="row"><div class="nw" style="transform:translateX(${off}px)">${st==="cur"?'<div class="go">СТАРТ</div>':""}<button class="nd ${st}" data-i="${i}">${st==="done"?I.chk:st==="cur"?I.star:I.lock}</button><div class="lb ${st==="lock"?"m":""}">${LESSONS[i].t}</div></div>${st==="cur"?`<img class="fox" src="${IMG.ask}" style="${off>0?"left":"right"}:6%">`:""}</div>`;
+    });
+    const all=n===u.l.length,op=state.chest.includes(ui),off=[0,44,64,44,0,-44,-64,-44][g++%8];
+    h+=`<div class="row"><div class="nw" style="transform:translateX(${off}px)"><button class="nd ${op?"opn":all?"rdy":"lock"}" data-c="${ui}">${I.chest}</button><div class="lb m">${op?"Награда получена":"Сундук · +15 XP"}</div></div></div></div>`;
+  });
+  $("p-learn").innerHTML=h;
+}
+function quest(){
+  const d=dq(),G=state.goal,p=Math.min(100,Math.round(d.xp/G*100));
+  const Q=[["Набрать "+G+" XP",d.xp,G],["Пройти 1 урок",d.les,1],["Урок без ошибок",d.perf,1]];
+  let h=`<div style="margin-top:6px"><div class="tag">СЕГОДНЯ</div><h1>Задания дня</h1></div>
+  <div class="card q" style="margin-top:14px"><div class="ring" style="background:conic-gradient(var(--green) ${p}%,#e6eddd 0)"><div class="ring" style="width:50px;height:50px;background:#fff">${p}%</div></div><div style="flex:1"><b>Дневная цель</b><span class="sub">${Math.min(d.xp,G)} из ${G} XP</span></div><img src="${IMG.happy}" width="54"></div>
+  <div class="card" style="padding:6px 16px 16px">`;
+  Q.forEach((q,i)=>{const ok=q[1]>=q[2],cl=d.claimed.includes(i);
+    h+=`<div class="q"><div style="flex:1"><b>${q[0]}</b><i><u style="width:${Math.min(100,q[1]/q[2]*100)}%"></u></i></div>${cl?"<em>Получено</em>":ok?`<button data-q="${i}">+5 XP</button>`:`<em style="color:var(--muted)">${Math.min(q[1],q[2])}/${q[2]}</em>`}</div>`});
+  $("p-quest").innerHTML=h+"</div>";
+}
+function league(){
+  const B=[["Айгүл",142],["Азамат",118],["Рамил",96],["Гөлнур",74],["Булат",51],["Салауат",33],["Зәйнәб",20]];
+  const L=B.map(b=>({n:b[0],x:b[1]})).concat([{n:uname,x:state.xp,me:1}]).sort((a,b)=>b.x-a.x);
+  $("p-league").innerHTML=`<div style="margin-top:6px"><div class="tag">ЛИГА</div><h1>Зелёная лига</h1><p class="sub">Первые трое переходят выше. Неделя идёт.</p></div>`+L.map((r,i)=>`<div class="lg ${r.me?"me":""}"><div class="n ${i<3?"t":""}">${i+1}</div><span>${r.n}${r.me?" (ты)":""}</span><em>${r.x} XP</em></div>`).join("");
+}
+function me(){
+  const B=[["Первый шаг",state.done.length>0,'<path d="M5 12l5 5 9-10"/>'],["Огонь 3 дня",state.days>=3,'<path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3-1-4 0-7 1-10z"/>'],["50 XP",state.xp>=50,'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>']];
+  $("p-me").innerHTML=`<div class="hero"><img src="${IMG.happy}"></div><h1 style="text-align:center;margin-top:14px">${uname}</h1><p class="sub" style="text-align:center">Изучаю башкирский язык</p>
+  <div class="grid"><div><b>${state.days}</b><span>дней подряд</span></div><div><b>${state.xp}</b><span>всего XP</span></div><div><b>${state.words}</b><span>слов выучено</span></div><div><b>${state.done.length}/${LESSONS.length}</b><span>уроков пройдено</span></div></div>
+  <div class="bd">${B.map(b=>`<div class="${b[1]?"":"off"}" style="color:${b[1]?"var(--green)":"var(--muted)"}">${ic(b[2],26)}${b[0]}</div>`).join("")}</div>
+  <button class="btn soft" data-s="1">Настройки</button>`;
+}
+const R={learn,quest,league,me};
+function go(p){page=p;document.querySelectorAll(".pg").forEach(e=>e.classList.toggle("on",e.id==="p-"+p));document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===p));hdr();R[p]();$("app").querySelector("main").scrollTop=0}
+
+function lesson(i){
+  if(state.hearts<=0)return sheet(`<div class="sf"><img src="${IMG.sad}"><div><h1>Сердечки закончились</h1><p class="sub">Новое сердечко через ${mins()} мин. Отдохни и возвращайся!</p></div></div><button class="btn soft" data-x="1">Понятно</button>`);
+  const d=state.done.includes(i);
+  sheet(`<div class="sf"><img src="${IMG.ask}"><div><div class="tag">${d?"ПОВТОРЕНИЕ":"УРОК "+(i+1)}</div><h1>${LESSONS[i].t}</h1><p class="sub">5 вопросов · до +13 XP</p></div></div><button class="btn" data-l="${i}">Начать</button>`);
+}
+function settings(){
+  const sw=k=>`<button class="tg" data-k="${k}">${k==="snd"?"Звуки":"Вибрация"}<span class="sw ${state[k]?"on":""}"></span></button>`;
+  sheet(`<div class="sh-h"><h1>Настройки</h1><button data-x="1" style="color:var(--muted)">${I.x}</button></div>${sw("snd")}${sw("vib")}
+  <p class="sub" style="margin-top:16px;font-weight:700">Дневная цель, XP</p><div class="chips">${[10,20,30].map(g=>`<button data-g="${g}" class="${state.goal===g?"on":""}">${g}</button>`).join("")}</div>
+  <button class="btn soft" data-r="1" style="color:#b4492a">Сбросить прогресс</button>`);
+}
+function reset(){const f=()=>{try{localStorage.removeItem("bash_state")}catch(e){}location.reload()};tg&&tg.showConfirm?tg.showConfirm("Сбросить весь прогресс?",o=>o&&f()):confirm("Сбросить весь прогресс?")&&f()}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-t],[data-i],[data-c],[data-q],[data-l],[data-k],[data-g],[data-x],[data-s],[data-r],#b-set,#shade");if(!t)return;
+  const D=t.dataset;
+  if(D.t){hap();return go(D.t)}
+  if(D.i!==undefined){hap();beep(660);const i=+D.i;return t.classList.contains("lock")?toast("Сначала пройди предыдущий урок"):lesson(i)}
+  if(D.c!==undefined){const u=+D.c;if(t.classList.contains("lock"))return toast("Пройди все уроки раздела");if(t.classList.contains("opn"))return toast("Награда уже получена");state.chest.push(u);state.xp+=15;dq().xp+=15;save();beep(880,.2);hap();toast("Сундук открыт: +15 XP");hdr();return learn()}
+  if(D.q!==undefined){const d=dq();d.claimed.push(+D.q);state.xp+=5;d.xp+=5;save();beep(880);hdr();return quest()}
+  if(D.l!==undefined){location.href="index.html?l="+D.l;return}
+  if(D.k){state[D.k]=!state[D.k];save();return settings()}
+  if(D.g){state.goal=+D.g;save();settings();return R[page]()}
+  if(D.r)return reset();
+  if(D.s||t.id==="b-set")return settings();
+  if(D.x||(t.id==="shade"&&e.target.id==="shade"))shut();
+});
+
+go("learn");
+setInterval(hdr,30000);
+
+// ---------- СВЯЗЬ С БОТОМ ----------
+const tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
+const tgUserId = tgUser ? tgUser.id : 0;
+
+if (tgUserId) {
+  fetch("/api/auth", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      user_id: tgUserId,
+      username: tgUser.username || null,
+      first_name: tgUser.first_name || "User",
+    })
+  }).then(r => r.json()).then(d => {
+    if (d.progress && typeof d.progress.xp === "number" && d.progress.xp > state.xp) {
+      state.xp = d.progress.xp;
+      save(); hdr(); R[page]();
+    }
+  }).catch(e => console.warn("auth failed", e));
+
+  fetch("/api/me?user_id=" + tgUserId)
+    .then(r => r.json())
+    .then(d => {
+      let changed = false;
+      if (typeof d.xp === "number" && d.xp > state.xp) { state.xp = d.xp; changed = true; }
+      if (Array.isArray(d.done_lessons)) {
+        d.done_lessons.forEach(id => {
+          if (!state.done.includes(id)) { state.done.push(id); changed = true; }
+        });
+      }
+      if (changed) { save(); hdr(); R[page](); }
+    })
+    .catch(e => console.warn("me failed", e));
+}
+</script>
+</body>
+</html>
