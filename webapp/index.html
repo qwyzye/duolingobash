@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Башҡортса өйрән</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7faf2; --green:#178553; --green-d:#0f6b42; --ink:#0f3a28; --muted:#7d9387;
+  --card:#ffffff; --ok:#e7f4d8; --ok-b:#bfdcca; --lime:#ddf59c; --off:#e4eadc; --off-t:#8da093;
+  --bad:#fdeee6; --bad-b:#d9744a; --bad-t:#b4492a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+#app{height:100%;max-width:440px;margin:0 auto;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) 20px calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+.screen.active{display:flex;animation:in .22s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grow{flex:1}
+.tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1{font-size:23px;line-height:1.18;font-weight:800;letter-spacing:-.01em}
+.sub{font-size:13px;color:var(--muted);line-height:1.4;margin-top:6px}
+.btn{width:100%;height:50px;border-radius:14px;background:var(--green);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .08s,background .15s}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{background:var(--off);color:var(--off-t);cursor:default}
+.btn.soft{background:var(--off);color:var(--ink)}
+.foot{text-align:center;font-size:11px;color:var(--muted);margin-top:10px;min-height:14px}
+.card{background:var(--card);border-radius:16px;box-shadow:0 1px 0 rgba(15,58,40,.04)}
+svg{display:block}
+
+.pill{align-self:center;background:var(--lime);color:var(--green-d);font-size:10px;font-weight:800;letter-spacing:.08em;padding:6px 12px;border-radius:99px;margin-top:6px}
+.welcome h1{text-align:center;margin-top:22px;font-size:26px}
+.welcome .sub{text-align:center;margin-top:8px}
+.hero{position:relative;width:236px;height:236px;margin:22px auto 0;border-radius:50%;background:#e3f0d3;display:flex;align-items:center;justify-content:center}
+.hero img{width:78%;height:auto;margin-top:6px}
+.bubble{position:absolute;right:-22px;top:10px;background:#fff;border-radius:14px 14px 14px 4px;padding:8px 12px;font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(15,58,40,.1)}
+.welcome .lead{text-align:center;font-size:13px;font-weight:700;margin-top:20px}
+.welcome .lead2{text-align:center;font-size:11px;color:var(--muted);margin-top:4px}
+
+.top{display:flex;align-items:center;gap:12px}
+.x{width:20px;height:20px;color:var(--muted)}
+.bar{flex:1;height:8px;border-radius:99px;background:#dfe8d6;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+.cnt{font-size:12px;font-weight:700;color:var(--muted);min-width:26px;text-align:right}
+.q .tag{margin-top:20px}
+.q h1{margin-top:6px}
+.wordcard{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 14px 18px;margin-top:16px;min-height:100px}
+.wordcard b{display:block;font-size:24px;font-weight:800}
+.wordcard span{font-size:11px;color:var(--muted)}
+.wordcard img{width:86px;height:auto;margin:-12px 0}
+.choose{font-size:12px;color:var(--muted);margin:18px 0 8px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:14px;background:#fff;border:2px solid transparent;margin-bottom:10px;font-weight:600;font-size:15px;transition:.15s}
+.opt .b{width:28px;height:28px;border-radius:9px;background:#f1f5ec;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+.opt.sel{background:var(--ok);border-color:var(--green)}
+.opt.sel .b{background:var(--green);color:#fff}
+.opt.bad{background:var(--bad);border-color:var(--bad-b)}
+.opt.bad .b{background:var(--bad-b);color:#fff}
+.opt.good{background:var(--ok);border-color:var(--ok-b)}
+.opt.good .b{background:var(--green);color:#fff}
+.opt:disabled{cursor:default}
+.dispute{align-items:flex-start;border-radius:14px;background:#fff;padding:12px 14px;margin-top:2px;width:100%;display:flex;gap:12px;text-align:left}
+.dispute .b{width:28px;height:28px;border-radius:9px;background:#f1f5ec;color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
+.dispute b{display:block;font-size:13px;font-weight:700}
+.dispute span{font-size:11px;color:var(--muted)}
+.msg{display:none;align-items:center;gap:8px;padding:11px 14px;border-radius:12px;font-size:13px;font-weight:700;margin-top:2px}
+.msg.show{display:flex}
+.msg.ok{background:#e2f0d0;color:var(--green-d)}
+.msg.no{background:var(--bad);color:var(--bad-t)}
+
+.done h1{text-align:center;margin-top:8px}
+.done .tag{text-align:center;margin-top:6px}
+.done .sub{text-align:center}
+.hero2{position:relative;width:210px;height:210px;margin:22px auto 0;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center}
+.hero2 img{width:74%;height:auto}
+.xp{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:12px;font-weight:800;padding:7px 14px;border-radius:99px;display:flex;gap:6px;align-items:center}
+.res{padding:16px;margin-top:34px;text-align:center}
+.res small{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+.res b{display:block;font-size:20px;margin-top:6px}
+.note{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;line-height:1.45}
+
+.headcard{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 14px 16px;margin-top:14px}
+.headcard h1{font-size:21px}
+.headcard img{width:78px;height:auto;flex:none}
+.row{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:16px;margin-top:28px;background:#fff;border-radius:16px}
+.row b{display:block;font-size:14px}
+.row span{font-size:11px;color:var(--muted)}
+.fox-r{align-self:flex-end;width:70px;margin:6px 4px 0}
+.fld{padding:14px;margin-top:6px}
+.fld small{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--green)}
+.fld textarea{width:100%;height:84px;margin-top:8px;border:0;outline:0;resize:none;background:#f1f5ec;border-radius:12px;padding:12px;font:inherit;font-size:14px;color:var(--ink)}
+.fld textarea::placeholder{color:#a0b0a5}
+.fld div{font-size:11px;color:var(--muted);margin-top:8px}
+.big{width:200px;margin:14px auto 0}
+.big img{width:100%;height:auto}
+.yours{padding:14px 16px;margin-top:10px}
+.yours small{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--green)}
+.yours b{display:block;font-size:15px;margin-top:6px;text-transform:uppercase;word-break:break-word}
+.thanks h1{margin-top:8px}
+
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp 0.8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section class="screen welcome" id="s-welcome">
+  <div class="pill">БАШКИРСКИЙ ЯЗЫК</div>
+  <h1>Сәләм, дуҫым!</h1>
+  <p class="sub">Привет, друг! Давай учить<br>башкирский вместе</p>
+  <div class="hero"><img data-img="happy" alt=""><div class="bubble">Һаумыһың!</div></div>
+  <p class="lead">Используйте Башҡортса өйрән</p>
+  <p class="lead2">короткие уроки — каждый день</p>
+  <div class="grow"></div>
+  <button class="btn" id="go-start">Старт <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  <p class="foot">Без регистрации — просто начни</p>
+</section>
+
+<section class="screen q" id="s-quiz">
+  <div class="top">
+    <button class="x" id="q-x" aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="bar"><i id="q-bar" style="width:0"></i></div>
+    <div class="cnt" id="q-cnt">1/5</div>
+  </div>
+  <div class="tag">ПЕРЕВОД СЛОВА</div>
+  <h1>Как переводится<br>это слово?</h1>
+  <div class="card wordcard"><div><b id="q-word">—</b><span>на башкирском</span></div><img id="q-fox" data-img="ask" alt=""></div>
+  <div class="choose">Выбери один ответ</div>
+  <div id="q-opts"></div>
+  <div class="msg ok" id="msg-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Дуҫым, всё верно!</div>
+  <div class="msg no" id="msg-no"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Не совсем. Попробуй ещё</div>
+  <button class="dispute" id="q-dispute"><span class="b"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span><span><b>Оспорить ответ</b><span>Не согласен с переводом?</span></span></button>
+  <div class="grow"></div>
+  <button class="btn" id="q-check" disabled>Проверить</button>
+  <p class="foot" id="q-foot">Сначала выбери ответ</p>
+</section>
+
+<section class="screen done" id="s-done">
+  <div class="tag">УРОК ПРОЙДЕН</div>
+  <h1>Первый шаг сделан!</h1>
+  <p class="sub">Так держать, ты уже говоришь по-башкирски</p>
+  <div class="hero2"><img data-img="happy" alt=""><div class="xp"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span id="d-xp">+10 XP</span></div></div>
+  <div class="card res"><small>РЕЗУЛЬТАТ УРОКА</small><b id="d-res">5 из 5</b></div>
+  <p class="note">Возвращайся завтра —<br>слова лучше запоминаются каждый день</p>
+  <div class="grow"></div>
+  <button class="btn" id="d-back">К урокам <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  <p class="foot">Прогресс сохранён</p>
+</section>
+
+<section class="screen" id="s-dispute">
+  <div class="top">
+    <button class="x" id="p-x" aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="bar"><i id="p-bar" style="width:0"></i></div>
+    <div class="cnt" id="p-cnt">1/5</div>
+  </div>
+  <div class="tag" style="margin-top:18px">ОСПОРИТЬ ОТВЕТ</div>
+  <div class="card headcard"><div><h1>Не согласен с<br>переводом?</h1><p class="sub">Выбери, как можно поспорить</p></div><img data-img="ask" alt=""></div>
+  <button class="row" id="p-offer"><div><b>Предложить свой вариант</b><span>Мы это проверим вручную</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#178553" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="grow"></div>
+  <button class="btn soft" id="p-back">Вернуться в вопрос</button>
+  <p class="foot">Твой ответ не засчитается как ошибка</p>
+</section>
+
+<section class="screen" id="s-offer">
+  <div class="top">
+    <button class="x" id="o-x" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="bar"><i id="o-bar" style="width:0"></i></div>
+    <div class="cnt" id="o-cnt">1/5</div>
+  </div>
+  <div class="tag" style="margin-top:18px">ПРЕДЛОЖЕНИЕ</div>
+  <h1 style="margin-top:6px">Как правильно?</h1>
+  <p class="sub">Напиши, как, по-твоему, переводится слово</p>
+  <img class="fox-r" data-img="ask" alt="">
+  <div class="card fld"><small>ТВОЙ ВАРИАНТ</small><textarea id="o-text" maxlength="40" placeholder="Напиши свой вариант…"></textarea><div id="o-cnt2">0/40</div></div>
+  <div class="grow"></div>
+  <button class="btn" id="o-send" disabled>Отправить вариант</button>
+  <p class="foot">Вариант отправится на проверку</p>
+</section>
+
+<section class="screen thanks" id="s-thanks">
+  <div class="tag">СПАСИБО</div>
+  <h1>Спасибо за идею!</h1>
+  <p class="sub">Твой вариант отправится на проверку</p>
+  <div class="big"><img data-img="happy" alt=""></div>
+  <div class="card yours"><small>ТВОЙ ВАРИАНТ</small><b id="t-text">ОТВЕТ</b></div>
+  <div class="grow"></div>
+  <button class="btn" id="t-back">Вернуться к уроку</button>
+  <p class="foot">Спасибо, что делаешь язык лучше</p>
+</section>
+
+</div>
+
+<script>
+const IMG = {
+  sad: "белка/01_Грустно.png",
+  angry: "белка/02_Злость.png",
+  ask: "белка/03_Вопросительно.png",
+  exc: "белка/04_Восклицательно.png",
+  happy: "белка/05_Весело.png",
+  disgusted: "белка/06_Отвратительно.png",
+  fear: "белка/07_Страх.png"
+};
+
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#f7faf2');tg.setBackgroundColor&&tg.setBackgroundColor('#f7faf2');}catch(e){}}
+const hap=t=>{if(!state.vib)return;try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred(t)}catch(e){}};
+const tap=()=>{if(!state.vib)return;try{tg&&tg.HapticFeedback&&tg.HapticFeedback.selectionChanged()}catch(e){}};
+
+const LESSONS=[
+{t:"Привет",p:[["Сәләм","Привет"],["Рәхмәт","Спасибо"],["Эйе","Да"],["Юҡ","Нет"],["Һау бул","До свидания"]]},
+{t:"Знакомство",p:[["Мин","Я"],["Һин","Ты"],["Дуҫ","Друг"],["Исем","Имя"],["Һаумыһығыҙ","Здравствуйте"]]},
+{t:"Семья",p:[["Әсә","Мама"],["Атай","Папа"],["Ҡустым","Младший брат"],["Һеңлем","Младшая сестра"],["Өләсә","Бабушка"]]},
+{t:"Числа 1–5",p:[["Бер","Один"],["Ике","Два"],["Өс","Три"],["Дүрт","Четыре"],["Биш","Пять"]]},
+{t:"Числа 6–10",p:[["Алты","Шесть"],["Ете","Семь"],["Һигеҙ","Восемь"],["Туғыҙ","Девять"],["Ун","Десять"]]},
+{t:"Цвета",p:[["Ҡыҙыл","Красный"],["Йәшел","Зелёный"],["Һары","Жёлтый"],["Зәңгәр","Синий"],["Аҡ","Белый"]]}
+];
+const TODAY=()=>new Date().toDateString();
+let state={xp:0,level:1,days:0,words:0,done:[],last:"",hearts:5,hAt:0,seen:false,goal:20,snd:true,vib:true,dq:{d:"",xp:0,les:0,perf:0,claimed:[]},chest:[]};
+try{Object.assign(state,JSON.parse(localStorage.getItem("bash_state")||"{}"))}catch(e){}
+if(!Array.isArray(state.done))state.done=state.done?[0]:[];
+const save=()=>{try{localStorage.setItem("bash_state",JSON.stringify(state))}catch(e){}};
+const HM=1200000;
+function regen(){if(state.hearts>=5){state.hAt=Date.now();return}const n=Math.floor((Date.now()-state.hAt)/HM);if(n>0){state.hearts=Math.min(5,state.hearts+n);state.hAt=state.hearts>=5?Date.now():state.hAt+n*HM;save()}}
+function dq(){if(state.dq.d!==TODAY())state.dq={d:TODAY(),xp:0,les:0,perf:0,claimed:[]};return state.dq}
+function beep(f,t){if(!state.snd)return;try{const c=beep.c||(beep.c=new(window.AudioContext||window.webkitAudioContext)());const o=c.createOscillator(),g=c.createGain();o.frequency.value=f||660;g.gain.value=.07;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+(t||.12))}catch(e){}}
+
+const LPs=new URLSearchParams(location.search).get("l"),LP=LPs===null?null:+LPs;
+
+let QUESTIONS=[];
+if(LP!==null&&LESSONS[LP]){
+  const P=LESSONS[LP].p;
+  QUESTIONS=P.map((p,i)=>({w:p[0],ok:p[1],bad:P[(i+1+Math.floor(Math.random()*(P.length-1)))%P.length][1]}));
+}
+
+const $=id=>document.getElementById(id);
+const tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
+const tgUserId = tgUser ? tgUser.id : 0;
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");$(id).scrollTop=0}
+
+let qi=0,sel=null,checked=false,wrongs=0,correct=0,mistakes=0,order=[];
+
+async function loadQuestionsFromAI(){
+  if (LP === null) return false;
+  try {
+    const r = await fetch(`/api/lesson/questions?lesson_id=${LP}&user_id=${tgUserId}`);
+    if (!r.ok) return false;
+    const d = await r.json();
+    if (Array.isArray(d.questions) && d.questions.length >= 3) {
+      QUESTIONS = d.questions;
+      return true;
+    }
+  } catch (e) {
+    console.warn("AI questions failed", e);
+  }
+  return false;
+}
+
+async function startLesson(){
+  show("s-quiz");
+  $("q-word").textContent = "…";
+  $("q-opts").innerHTML = "";
+  $("msg-ok").classList.remove("show");
+  $("msg-no").classList.remove("show");
+  const bt = $("q-check");
+  bt.disabled = true;
+  bt.innerHTML = '<span class="spinner"></span> Генерирую…';
+  $("q-foot").textContent = "ИИ придумывает вопросы для тебя";
+  $("q-bar").style.width = "0";
+  $("q-cnt").textContent = "0/5";
+
+  const aiOk = await loadQuestionsFromAI();
+  if (!aiOk && QUESTIONS.length === 0) {
+    $("q-word").textContent = "—";
+    bt.textContent = "Назад";
+    bt.disabled = false;
+    bt.onclick = () => { location.href = "home.html"; };
+    $("q-foot").textContent = "Не удалось загрузить вопросы. Попробуй позже.";
+    return;
+  }
+  bt.onclick = check;
+  bt.textContent = "Проверить";
+  qi = 0;
+  correct = 0;
+  mistakes = 0;
+  loadQ();
+}
+
+function setProgress(){
+  const p=(qi/QUESTIONS.length*100)+"%",c=(qi+1)+"/"+QUESTIONS.length;
+  ["q","p","o"].forEach(k=>{const bar=$(k+"-bar"),cnt=$(k+"-cnt");if(bar)bar.style.width=p;if(cnt)cnt.textContent=c});
+}
+function loadQ(){
+  const q=QUESTIONS[qi];sel=null;checked=false;wrongs=0;
+  order=Math.random()<.5?["ok","bad"]:["bad","ok"];
+  $("q-word").textContent=q.w;$("q-fox").src=IMG.ask;
+  setProgress();
+  const box=$("q-opts");box.innerHTML="";
+  order.forEach((k,i)=>{
+    const b=document.createElement("button");b.className="opt";b.dataset.k=k;
+    b.innerHTML='<span class="b">'+(i+1)+'</span><span>'+q[k]+'</span>';
+    b.onclick=()=>pick(b);box.appendChild(b);
+  });
+  $("msg-ok").classList.remove("show");$("msg-no").classList.remove("show");
+  const bt=$("q-check");bt.disabled=true;bt.textContent="Проверить";$("q-foot").textContent="Сначала выбери ответ";
+}
+function pick(b){
+  if(checked)return;tap();
+  document.querySelectorAll("#q-opts .opt").forEach(o=>{o.classList.remove("sel");});
+  document.querySelectorAll("#q-opts .opt").forEach((o,i)=>o.querySelector(".b").textContent=i+1);
+  b.classList.add("sel");b.querySelector(".b").innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+  sel=b;$("q-check").disabled=false;$("q-foot").textContent="Нажми «Проверить»";
+}
+const WRONG_FOX=["angry","disgusted","fear","sad"];
+function check(){
+  const bt=$("q-check");
+  if(checked&&state.hearts<=0){location.href="home.html";return}
+  if(checked&&sel&&sel.dataset.k==="ok"){
+    if(qi<QUESTIONS.length-1){qi++;loadQ()}else finish();return;
+  }
+  if(checked){
+    checked=false;sel=null;
+    document.querySelectorAll("#q-opts .opt").forEach((o,i)=>{o.className="opt";o.disabled=false;o.querySelector(".b").textContent=i+1});
+    $("msg-no").classList.remove("show");bt.disabled=true;bt.textContent="Проверить";$("q-foot").textContent="Сначала выбери ответ";$("q-fox").src=IMG.ask;return;
+  }
+  if(!sel)return;
+  checked=true;
+  const opts=document.querySelectorAll("#q-opts .opt");
+  if(sel.dataset.k==="ok"){
+    hap("success");beep(880);if(wrongs===0)correct++;
+    opts.forEach(o=>o.disabled=true);
+    sel.className="opt good";
+    $("msg-ok").classList.add("show");$("q-fox").src=IMG.happy;
+    bt.innerHTML='Продолжить <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    $("q-foot").textContent=qi<QUESTIONS.length-1?"Следующий вопрос — "+(qi+2)+" из "+QUESTIONS.length:"Это был последний вопрос";
+    $("q-bar").style.width=((qi+1)/QUESTIONS.length*100)+"%";
+  }else{
+    hap("error");beep(220,.2);mistakes++;regen();if(state.hearts>=5)state.hAt=Date.now();state.hearts=Math.max(0,state.hearts-1);save();
+    sel.className="opt bad";sel.querySelector(".b").innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    opts.forEach(o=>o.disabled=true);
+    $("msg-no").classList.add("show");$("q-fox").src=IMG[WRONG_FOX[wrongs%WRONG_FOX.length]];wrongs++;
+    if(state.hearts<=0){bt.textContent="К урокам";$("q-foot").textContent="Сердечки закончились — отдохни, они восстановятся";$("msg-no").lastChild.textContent="Сердечки закончились"}else{bt.textContent="Попробовать ещё";$("q-foot").textContent="Осталось сердечек: "+state.hearts}
+  }
+}
+
+async function finish(){
+  const xp = correct*2+3;
+  const d = dq();
+  d.les++; if(mistakes===0) d.perf++;
+  if(!state.done.includes(LP)) state.done.push(LP);
+  state.words = Math.max(state.words, state.done.length*5);
+  const y = new Date(Date.now()-864e5).toDateString();
+  if(state.last!==TODAY()){state.days=state.last===y?state.days+1:1;state.last=TODAY()}
+  save();
+
+  let earnedXp = xp;
+
+  if (tgUserId && LP !== null) {
+    try {
+      const r = await fetch("/api/lesson/complete", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          user_id: tgUserId,
+          lesson_id: LP,
+          xp: xp,
+          correct: correct,
+          mistakes: mistakes,
+          username: tgUser.username || null,
+          first_name: tgUser.first_name || "User",
+        })
+      });
+      if (r.ok) {
+        const d2 = await r.json();
+        if (typeof d2.points === "number") state.xp = d2.points;
+        if (typeof d2.level === "number") state.level = d2.level;
+        if (Array.isArray(d2.done_lessons)) {
+          d2.done_lessons.forEach(id => { if(!state.done.includes(id)) state.done.push(id); });
+        }
+        if (d2.already_awarded) earnedXp = 0;
+      }
+    } catch (e) {
+      console.warn("lesson sync failed", e);
+    }
+  } else {
+    state.xp += xp;
+    state.level = Math.floor(state.xp / 100) + 1;
+  }
+
+  save();
+
+  $("d-xp").textContent = earnedXp ? "+"+earnedXp+" XP" : "Уже начислено";
+  $("d-res").textContent = correct+" из "+QUESTIONS.length+" с первого раза";
+  hap("success");
+  show("s-done");
+}
+
+$("go-start").onclick=()=>{state.seen=true;save();location.href="home.html"};
+$("q-check").onclick=check;
+$("q-x").onclick=()=>{location.href="home.html"};
+$("p-x").onclick=$("o-x").onclick=()=>show("s-quiz");
+$("q-dispute").onclick=()=>show("s-dispute");
+$("p-back").onclick=()=>show("s-quiz");
+$("p-offer").onclick=()=>{$("o-text").value="";$("o-cnt2").textContent="0/40";$("o-send").disabled=true;show("s-offer")};
+$("o-text").oninput=e=>{const v=e.target.value.trim();$("o-cnt2").textContent=e.target.value.length+"/40";$("o-send").disabled=!v};
+$("o-send").onclick=async()=>{
+  const v=$("o-text").value.trim();if(!v)return;
+  try {
+    await fetch("/suggest", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ user_id: tgUserId, word: QUESTIONS[qi] ? QUESTIONS[qi].w : "", suggestion: v })
+    });
+  } catch (e) { console.warn("suggest failed", e); }
+  $("t-text").textContent=v;hap("success");show("s-thanks");
+};
+$("t-back").onclick=()=>show("s-quiz");
+$("d-back").onclick=()=>{location.href="home.html"};
+
+document.querySelectorAll("img[data-img]").forEach(i=>i.src=IMG[i.dataset.img]);regen();
+
+if (tgUserId) {
+  fetch("/api/auth", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      user_id: tgUserId,
+      username: tgUser.username || null,
+      first_name: tgUser.first_name || "User",
+    })
+  }).then(r => r.json()).then(d => {
+    if (d.progress && typeof d.progress.xp === "number") {
+      state.xp = d.progress.xp;
+      state.level = d.progress.level || 1;
+      save();
+    }
+  }).catch(e => console.warn("auth failed", e));
+}
+
+(async () => {
+  if (LP !== null && LP >= 0 && LP < LESSONS.length) {
+    if (state.hearts <= 0) { location.replace("home.html"); return; }
+    await startLesson();
+  } else if (state.seen) {
+    location.replace("home.html");
+  } else {
+    show("s-welcome");
+  }
+})();
+</script>
+</body>
+</html>

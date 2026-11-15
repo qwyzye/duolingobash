@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Көшәк — Главная</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#25c95d;--deep:#238562;--hero:#2fa17a;--ink:#203b34;--muted:#70867b;--pale:#def5d2;--line:#dce9dc;--bg:#f5f8f3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito Sans",Arial,sans-serif;font-size:14px}
+.page{max-width:1336px;margin:0 auto;padding:91px 0 0}
+header{height:89px;background:#fff;display:flex;align-items:center;padding:0 66px;gap:30px}
+.brand{display:flex;align-items:center;gap:31px;min-width:185px}.brand-mark{width:42px;height:42px;border-radius:12px;background:#def5d2}.brand-name{font-size:24px;font-weight:900;line-height:1.05;color:#17253e}.brand-sub{font-size:10px;color:#687a9a;margin-top:3px}
+nav{display:flex;align-items:center;gap:9px;flex:1}nav a{color:#00c83f;text-decoration:none;padding:12px 16px;border-radius:13px;font-weight:600}nav a.active{background:#def5d2}
+.profile{display:flex;align-items:center;gap:10px;color:#17253e;font-weight:800}.bell{font-size:22px;margin-right:10px}.profile .avatar{width:38px;height:38px;border-radius:50%;background:#def5d2;color:#2eaa69;display:grid;place-items:center;font-weight:600}.profile small{display:block;color:#8290a6;font-weight:500;font-size:10px;margin-top:2px}.chevron{margin-left:12px;color:#63758e}
+.auth-buttons{display:flex;gap:10px;align-items:center}
+.auth-btn{padding:10px 18px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;transition:background .15s;white-space:nowrap;border:0;cursor:pointer;font-family:inherit}
+.auth-btn-login{color:#238562;border:1.5px solid #b9d8b8;background:#fff}
+.auth-btn-login:hover{background:#def5d2}
+.auth-btn-register{color:#fff;background:#25c95d}
+.auth-btn-register:hover{background:#1fae4f}
+main{padding:0 0 29px}
+.hero{height:185px;background:var(--hero);border-radius:27px;margin-top:2px;position:relative;overflow:hidden;color:#fff;padding:29px 30px}
+.hero:before,.hero:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.08);border-radius:50%;width:430px;height:430px;top:-180px;left:640px}.hero:after{width:500px;height:500px;left:580px;top:-210px}
+.date{font-size:12px;font-weight:600;position:relative;z-index:2}.hero h1{font-size:34px;line-height:1.2;margin:12px 0 13px;font-weight:900;position:relative;z-index:2}.hero p{font-size:15px;line-height:1.5;margin:0;position:relative;z-index:2}
+.mascot{position:absolute;z-index:1;width:340px;height:auto;max-height:185px;object-fit:contain;object-position:center bottom;left:365px;bottom:0;transform:none;filter:none;display:block}
+.lesson{position:absolute;right:30px;top:30px;width:357px;height:124px;border-radius:20px;background:white;color:#17253e;display:flex;align-items:center;padding:20px;gap:17px;z-index:2;text-decoration:none}
+.lesson:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.lesson-icon,.quick-icon{width:62px;height:74px;border-radius:12px;background:#def5d2;display:grid;place-items:center;color:#00c878;font-size:22px;flex-shrink:0}.lesson small{color:#8592a4;font-size:10px;font-weight:700}.lesson strong{display:block;font-size:15px;margin:7px 0 6px}.lesson em{font-style:normal;color:#79927b;font-size:11px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+.quick-card{height:81px;border:1px solid #20d879;border-radius:20px;background:#fff;display:flex;align-items:center;padding:14px;gap:12px;text-decoration:none;color:inherit}
+.quick-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.quick-icon{width:38px;height:38px;border-radius:12px;font-size:18px}.quick-card strong{display:block;font-size:12px;color:#1b2940}.quick-card small{display:block;font-size:11px;color:#00c944;margin-top:4px}.arrow{margin-left:auto;color:#00c83f;font-size:21px}
+.content{display:grid;grid-template-columns:1.58fr 1.03fr;gap:28px;margin:26px 6px 0}
+.quiz{background:#fff;border:1px solid var(--line);border-radius:23px;padding:20px 23px 27px;min-height:298px}
+.quiz-top{display:flex;justify-content:space-between;align-items:center}.pill{display:inline-block;background:#def5d2;color:#25835e;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:800;min-width:103px}.quiz-top small{font-size:12px;color:#71877d;font-weight:700;margin-right:86px}
+.quiz h2{font-size:27px;margin:15px 0 5px;font-weight:900}.question{font-size:18px;font-weight:700;margin-bottom:17px}
+.answer{height:52px;background:#f4f7f2;border-radius:14px;display:flex;align-items:center;padding:0 17px;gap:70px;margin-bottom:19px}.answer b{font-size:27px;color:#238562}.answer span{font-size:14px;color:#6f8579}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.option{height:53px;border:1.5px solid #b9d8b8;border-radius:13px;display:flex;align-items:center;padding:0 12px;gap:22px;font-size:15px;font-weight:800;cursor:pointer}.option b{color:#238562}
+.quiz-actions{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.quiz-actions a{padding:11px 20px;border-radius:12px;font-weight:800;font-size:14px;text-decoration:none;display:inline-block}
+.btn-primary{background:#25c95d;color:#fff}
+.btn-primary:hover{background:#1fae4f}
+.btn-secondary{background:#f4f7f2;color:#238562;border:1.5px solid #b9d8b8}
+.btn-secondary:hover{background:#def5d2}
+.ranking{background:#fff;border:1px solid #18d77b;border-radius:48px;padding:18px 19px 20px;min-height:298px}.ranking h2{font-size:30px;color:#2ea27a;font-weight:900;margin:0 0 2px}.ranking>p{color:#2ea27a;margin:0 0 7px;font-size:14px}
+.person{height:54px;display:flex;align-items:center;padding:0 17px;gap:13px;border-radius:17px}.person.first{background:#def5d2}.rank{font-size:18px;color:#238562;font-weight:800;width:20px}.person .avatar{width:39px;height:39px;border-radius:50%;background:#f3f7f2;color:#258562;display:grid;place-items:center;font-weight:800}.person.first .avatar{background:white}.who{flex:1}.who strong{font-size:14px;display:block}.who small{font-size:10px;color:#758b7f}.xp{font-size:14px;color:#238562;font-weight:900}
+.bottom{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:18px;margin:19px 6px 0}
+.word,.streak,.culture{height:232px;border-radius:23px;padding:19px 21px}.word{background:#def5d2}.word .pill{background:white;color:#258562}.word h2{font-size:35px;color:#238562;margin:16px 0 0;font-weight:900}.word strong{font-size:17px}.word p{font-size:15px;line-height:1.45;margin-top:16px}
+.streak{background:white;border:1px solid var(--line)}.streak h3{font-size:18px;margin:0 0 7px;font-weight:900}.streak p{color:#71877d;font-size:15px;margin:0}.streak h2{font-size:27px;color:#238562;margin:17px 0 10px;font-weight:900}.days{display:flex;justify-content:space-between;gap:7px}.day{text-align:center;color:#70867b;font-size:11px}.day b{width:36px;height:36px;border-radius:50%;background:#f3f7f2;display:grid;place-items:center;font-size:14px;margin-bottom:4px}.day.done b{background:#238562;color:white}
+.culture{background:#fff1d1}.culture .pill{background:white;color:#8a610b;width:161px}.culture h2{font-size:23px;margin:18px 0 10px;font-weight:900}.culture p{font-size:15px;line-height:1.42;margin:0}.culture strong{display:block;color:#8a610b;font-size:15px;margin-top:20px}
+footer{height:54px;border-top:1px solid #e2e9e4;display:flex;align-items:center;justify-content:space-between;padding:0 15px;color:#7c8ba0;font-size:11px}footer b{color:#00c83f;margin-left:22px}
+@media(max-width:900px){.page{padding:12px}.brand{min-width:auto}.brand-sub,nav{display:none}header{height:70px;padding:0 18px}.profile{margin-left:auto}.auth-buttons{gap:6px}.auth-btn{padding:8px 12px;font-size:12px}.hero{height:auto;min-height:230px;padding:24px}.hero h1{font-size:28px}.hero p{max-width:60%}.mascot{left:35%;width:230px;height:150px;bottom:0;opacity:1;transform:none}.lesson{position:relative;right:auto;top:auto;margin-top:18px;width:min(100%,360px);height:95px}.quick{grid-template-columns:repeat(2,1fr)}.content{grid-template-columns:1fr;margin:18px 0}.ranking{border-radius:25px}.quiz-top small{margin-right:0}.bottom{grid-template-columns:1fr 1fr;margin:18px 0}.culture{grid-column:1/-1}footer{padding:12px;height:auto;gap:12px;flex-wrap:wrap}}
+@media(max-width:560px){.page{padding:0}.quick{grid-template-columns:1fr;padding:0 12px}.hero{border-radius:0 0 22px 22px}.hero p{max-width:100%}.mascot{display:none}.content,.bottom{padding:0 12px;grid-template-columns:1fr}.quiz{padding:18px}.quiz h2{font-size:23px}.question{font-size:16px}.answer{gap:20px}.options{grid-template-columns:1fr;gap:8px}.ranking{min-height:0}.bottom .culture{grid-column:auto}.word,.streak,.culture{height:auto;min-height:210px}footer{padding:16px}.profile>div:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="brand"><div class="brand-mark"></div><div><div class="brand-name">Көшәк</div><div class="brand-sub">школа возможностей</div></div></div>
+  <nav><a class="active" href="/">Главная</a><a href="#">О школе</a><a href="/exercise">Учёба</a><a href="#">Школьная жизнь</a></nav>
+  <div class="profile" id="profile-box">
+    <span class="bell">♧</span>
+    <div class="avatar" id="profile-avatar">—</div>
+    <div><span id="profile-name">Гость</span><small id="profile-level">Не авторизован</small></div>
+    <span class="chevron">⌄</span>
+  </div>
+  <div class="auth-buttons" id="auth-buttons">
+    <a href="/login" class="auth-btn auth-btn-login">Войти</a>
+    <a href="/register" class="auth-btn auth-btn-register">Регистрация</a>
+  </div>
+</header>
+<main>
+<section class="hero">
+  <div class="date" id="today-date">Сегодня</div>
+  <h1>Доброе утро, <span id="greeting-name">…</span>!</h1>
+  <p>Всё, чем живёт наше приложение — в одном месте.<br>Пусть сегодня случится что-нибудь замечательное!</p>
+  <img class="mascot" src="/static/assets/mascot.png" alt="Лисёнок с флагом Башкортостана">
+  <a class="lesson" href="/exercise">
+    <div class="lesson-icon">▣</div>
+    <div>
+      <small>Продолжить обучение:</small>
+      <strong>Еда: Блюда, Фрукты, Овощи</strong>
+      <em>Перейти к заданиям →</em>
+    </div>
+  </a>
+</section>
+<section class="quick">
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">▣</div>
+    <div><strong>Список заданий</strong><small>Вам есть что закончить</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/leaderboard">
+    <div class="quick-icon">▦</div>
+    <div><strong>Ваша серия</strong><small id="streak-card-text">Вы в ударе уже 0 дней</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">☷</div>
+    <div><strong>Выбрать язык</strong><small>Мы поможем вам</small></div>
+    <span class="arrow">›</span>
+  </a>
+  <a class="quick-card" href="/exercise">
+    <div class="quick-icon">♧</div>
+    <div><strong>Последняя тема</strong><small style="color:#79927b">Еда : Блюда, фрукты, овощи</small></div>
+    <span class="arrow" style="color:#79927b">›</span>
+  </a>
+</section>
+<section class="content">
+  <div class="quiz">
+    <div class="quiz-top"><span class="pill">РАЗМИНКА</span><small>1 вопрос · меньше минуты</small></div>
+    <h2>Начнём с простого?</h2><div class="question" id="quiz-question">Загрузка…</div>
+    <div class="answer"><b id="quiz-word">…</b><span>Одно слово — и разговор уже начался.</span></div>
+    <div class="options" id="quiz-options"></div>
+    <div class="quiz-actions">
+      <a class="btn-primary" href="/exercise">Начать задания →</a>
+      <a class="btn-secondary" href="/exercise">Все задания</a>
+    </div>
+  </div>
+  <div class="ranking"><h2>Лучшие ученики</h2><p>Рейтинг за неделю</p>
+    <div id="ranking-list"><p style="color:#758b7f;padding:12px;">Загрузка…</p></div>
+  </div>
+</section>
+<section class="bottom">
+  <div class="word"><span class="pill">СЛОВО ДНЯ</span><h2 id="word-ba">…</h2><strong id="word-ru">…</strong><p>Скажите «<span id="word-ba-inline">…</span>» тому,<br>кто сегодня вам помог.</p></div>
+  <div class="streak"><h3>Маленький шаг каждый день</h3><p>Ваша цель — 5 минут практики</p><h2 id="streak-title">—</h2><div class="days" id="streak-days"></div></div>
+  <div class="culture"><span class="pill">ЯЗЫК И КУЛЬТУРА</span><h2>Курай — голос Башкортостана</h2><p>Курай — башкирский духовой инструмент.<br>Его цветок изображён на флаге республики:<br>семь лепестков — символ единства.</p><strong>Курай&nbsp; / &nbsp;ҡурай</strong></div>
+</section>
+</main>
+<footer><span>© 2026 Школа «Көшәк» · Учимся с интересом, растём вместе.</span><span>Правила портала <b>ⓘ &nbsp;Служба поддержки</b></span></footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function initials(name) {
+  const parts = String(name || '').trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (name || '?').slice(0, 2).toUpperCase();
+}
+
+function pluralDays(n) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return 'день';
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'дня';
+  return 'дней';
+}
+
+async function api(path) {
+  const res = await fetch(path, { credentials: 'same-origin' });
+  if (res.status === 401) { window.location.href = '/login'; throw new Error('401'); }
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+(function setDate() {
+  const d = new Date();
+  const months = ['ЯНВАРЯ','ФЕВРАЛЯ','МАРТА','АПРЕЛЯ','МАЯ','ИЮНЯ','ИЮЛЯ','АВГУСТА','СЕНТЯБРЯ','ОКТЯБРЯ','НОЯБРЯ','ДЕКАБРЯ'];
+  const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+  $('today-date').textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+})();
+
+async function loadMe() {
+  try {
+    const me = await api('/api/me');
+    $('profile-name').textContent = me.username || 'Пользователь';
+    $('profile-level').textContent = 'Уровень ' + (me.level ?? 1);
+    $('profile-avatar').textContent = initials(me.username);
+    $('greeting-name').textContent = me.username || 'друг';
+
+    const streak = me.streak_days ?? 0;
+    $('streak-title').textContent = streak + ' ' + pluralDays(streak);
+    $('streak-card-text').textContent = 'Вы в ударе уже ' + streak + ' ' + pluralDays(streak);
+    renderStreak(streak);
+
+    const authBox = $('auth-buttons');
+    if (authBox) {
+      authBox.innerHTML = '<form action="/logout" method="POST" style="margin:0;">' +
+        '<button type="submit" class="auth-btn auth-btn-login">Выйти</button></form>';
+    }
+  } catch (e) {
+    console.warn('me:', e);
+    $('profile-name').textContent = 'Гость';
+    $('profile-level').textContent = 'Не авторизован';
+    $('profile-avatar').textContent = '?';
+    renderStreak(0);
+  }
+}
+
+async function loadQuiz() {
+  try {
+    const q = await api('/api/exercise/random');
+    $('quiz-question').textContent = 'Как переводится башкирское «' + q.text_ba + '»?';
+    $('quiz-word').textContent = q.text_ba;
+
+    const box = $('quiz-options');
+    box.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.innerHTML = '<b>' + (i + 1) + '</b>' + escapeHtml(opt);
+      div.addEventListener('click', () => {
+        [...box.children].forEach(c => c.style.pointerEvents = 'none');
+        [...box.children].forEach(c => {
+          const txt = c.textContent.slice(1).trim();
+          if (txt === q.translation) { c.style.background = '#def5d2'; c.style.borderColor = '#25c95d'; }
+        });
+        if (opt !== q.translation) { div.style.background = '#fee2e2'; div.style.borderColor = '#ef4444'; }
+      });
+      box.appendChild(div);
+    });
+  } catch (e) {
+    console.warn('quiz:', e);
+    $('quiz-question').textContent = 'Не удалось загрузить задание';
+  }
+}
+
+async function loadRanking() {
+  try {
+    const items = await api('/api/leaderboard');
+    const top = items.slice(0, 3);
+    const box = $('ranking-list');
+    if (top.length === 0) {
+      box.innerHTML = '<p style="color:#758b7f;padding:12px;">Пока нет игроков</p>';
+      return;
+    }
+    box.innerHTML = top.map((u, i) => `
+      <div class="person ${i === 0 ? 'first' : ''}">
+        <span class="rank">${u.rank ?? (i + 1)}</span>
+        <span class="avatar">${escapeHtml(initials(u.username))}</span>
+        <div class="who"><strong>${escapeHtml(u.username)}</strong><small>Уровень ${u.level ?? 1}</small></div>
+        <span class="xp">${u.points ?? 0} XP</span>
+      </div>`).join('');
+  } catch (e) { console.warn('ranking:', e); }
+}
+
+async function loadWord() {
+  try {
+    const w = await api('/api/word-of-day');
+    $('word-ba').textContent = w.text_ba;
+    $('word-ru').textContent = w.translation;
+    $('word-ba-inline').textContent = w.text_ba;
+  } catch (e) { console.warn('word:', e); }
+}
+
+function renderStreak(streakDays) {
+  const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const today = new Date();
+  const dow = (today.getDay() + 6) % 7;   // 0 = понедельник
+  const start = new Date(today);
+  start.setDate(today.getDate() - dow);
+
+  $('streak-days').innerHTML = labels.map((label, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const daysAgo = dow - i;  // 0 = сегодня
+    const done = daysAgo >= 0 && daysAgo < streakDays;
+    return `<div class="day ${done ? 'done' : ''}"><b>${done ? '✓' : d.getDate()}</b>${label}</div>`;
+  }).join('');
+}
+
+loadMe();
+loadQuiz();
+loadRanking();
+loadWord();
+</script>
+</body>
+</html>

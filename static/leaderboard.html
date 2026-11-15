@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Топ игроков</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 16px;
+            color: #111827;
+        }
+        h1 { margin: 0 0 8px; font-size: 24px; }
+        .muted { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+        th { background: #f9fafb; font-weight: 600; color: #374151; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f9fafb; }
+        .rank { width: 60px; font-weight: 700; }
+        .rank-1 { color: #eab308; }
+        .rank-2 { color: #9ca3af; }
+        .rank-3 { color: #b45309; }
+        .points { font-weight: 600; color: #3b82f6; }
+        .empty, .error { padding: 24px; text-align: center; color: #6b7280; }
+        .error { color: #b91c1c; background: #fee2e2; border-radius: 6px; margin-bottom: 16px; padding: 12px; }
+    </style>
+</head>
+<body>
+
+    <h1>Топ игроков</h1>
+    <p class="muted">Сортировка по очкам, затем по уровню</p>
+
+    <div id="error" class="error" style="display: none;"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="rank">#</th>
+                <th>Игрок</th>
+                <th style="width: 100px;">Уровень</th>
+                <th style="width: 120px;">Очки</th>
+            </tr>
+        </thead>
+        <tbody id="board-body">
+            <tr><td colspan="4" class="empty">Загрузка…</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        const body = document.getElementById('board-body');
+        const errorBox = document.getElementById('error');
+
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function rankClass(rank) {
+            if (rank === 1) return 'rank rank-1';
+            if (rank === 2) return 'rank rank-2';
+            if (rank === 3) return 'rank rank-3';
+            return 'rank';
+        }
+
+        async function load() {
+            try {
+                const res = await fetch('/api/leaderboard', { credentials: 'same-origin' });
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                if (!res.ok) throw new Error('Ошибка ' + res.status);
+
+                const items = await res.json();
+                if (items.length === 0) {
+                    body.innerHTML = '<tr><td colspan="4" class="empty">Пока нет игроков</td></tr>';
+                    return;
+                }
+                body.innerHTML = items.map(u => `
+                    <tr>
+                        <td class="${rankClass(u.rank)}">${u.rank}</td>
+                        <td>${escapeHtml(u.username)}</td>
+                        <td>${u.level}</td>
+                        <td class="points">${u.points}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                errorBox.textContent = 'Не удалось загрузить топ: ' + err.message;
+                errorBox.style.display = 'block';
+                body.innerHTML = '<tr><td colspan="4" class="empty">—</td></tr>';
+            }
+        }
+
+        load();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Көшәк — Практикуемся в башкирском</title>
+<style>
+:root{--page:#f4f8f3;--white:#fff;--ink:#203b34;--muted:#70877e;--green:#21835f;--green-dark:#187a58;--green-soft:#def5d2;--line:#dce8d9;--pale:#f3f7f2;--gold:#e9bd70;--gold-bg:#fff1d2}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--page)}
+body{padding:0 4.4% 28px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--green);text-decoration:none}
+.topbar{height:88px;background:#fff;border-bottom:1px solid #e3ebe1;display:flex;align-items:center;padding:0 5.2%;gap:42px}
+.brand{display:flex;align-items:center;gap:30px;min-width:190px}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--green-soft)}
+.brand-name{font-size:23px;font-weight:700;line-height:1.1}
+.brand-sub{display:block;font-size:9px;color:#718276;margin-top:4px;font-weight:600}
+.nav{display:flex;align-items:center;gap:26px;white-space:nowrap;font-size:14px;font-weight:600}
+.nav a{color:#14845d;padding:12px 14px;border-radius:13px}
+.nav a.active{background:var(--green-soft)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:13px}
+.bell{font-size:22px;color:#172d42;border:0;background:transparent}
+.vline{height:30px;border-left:1px solid #e2e9e1}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;color:var(--green);font-size:12px}
+.user-meta{line-height:1.5;white-space:nowrap}
+.user-meta small{display:block;color:var(--muted)}
+main{max-width:1245px;margin:36px auto 0}
+.layout{display:grid;grid-template-columns:263px minmax(0,1fr);gap:30px}
+.back{font-size:14px;margin:0 0 28px}
+.sidebar-card{background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px 18px;margin-bottom:32px}
+.eyebrow{font-size:10px;font-weight:700;color:#16875e}
+.sidebar-card h2{font-size:22px;line-height:1.4;margin:18px 0 16px}
+.sidebar-card p{font-size:13px;color:var(--muted);margin:0 0 18px}
+progress{width:100%;height:6px;border:0;border-radius:9px;overflow:hidden}
+progress::-webkit-progress-bar{background:#e7eee4;border-radius:9px}
+progress::-webkit-progress-value{background:var(--green);border-radius:9px}
+progress::-moz-progress-bar{background:var(--green)}
+.sidebar-title{font-size:10px;color:var(--muted);font-weight:700;margin:0 0 15px 4px}
+.task-list{list-style:none;padding:0;margin:0}
+.task-list li{min-height:49px;display:flex;align-items:stretch;font-size:14px;border-radius:13px;color:var(--ink)}
+.task-nav{width:100%;min-height:49px;display:flex;align-items:center;gap:16px;padding:0 15px;border:0;background:transparent;color:inherit;text-align:left;font-size:14px;border-radius:13px}
+.task-nav:hover:not(:disabled){background:#edf5eb}
+.task-nav.is-current{background:var(--green-soft);font-weight:700;color:#245044}
+.task-nav-mark{min-width:19px;color:var(--muted);font-weight:600}
+.task-nav.is-current .task-nav-mark,.task-list li.done .task-nav-mark{color:var(--green)}
+.task-nav:disabled{opacity:.55;cursor:not-allowed}
+.lock-mark{margin-left:auto;font-size:10px}
+.more-tasks{font-size:12px;color:var(--muted);margin:24px 0 42px 15px}
+.tip{background:var(--gold-bg);border-radius:20px;padding:18px 17px;font-size:13px;line-height:1.45}
+.tip strong{display:block;color:#986400;margin-bottom:8px}
+.content-head{margin:0 0 29px}
+.breadcrumb{font-size:12px;color:var(--muted);margin:1px 0 25px}
+.content-head h1{font-size:31px;line-height:1.2;margin:0 0 10px;letter-spacing:-.4px}
+.content-head p{font-size:14px;color:var(--muted);margin:0}
+.task-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:23px}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.pill{background:var(--green-soft);color:#16865e;font-size:10px;font-weight:700;padding:8px 12px;border-radius:20px}
+.task-number{font-size:12px;color:var(--muted);font-weight:600}
+.word-box{background:var(--pale);border-radius:16px;padding:17px 19px 16px;margin-bottom:17px}
+.word-box small{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+.word-box strong{font-size:31px;color:var(--green);line-height:1.1}
+.question{font-size:21px;margin:0 0 18px}
+.instruction{font-size:14px;color:var(--muted);margin:0 0 12px}
+.save-indicator{font-size:12px;color:var(--muted);margin:0 0 18px;display:flex;align-items:center;gap:8px;min-height:18px}
+.save-indicator .save-dot{width:8px;height:8px;border-radius:50%;background:#b6c7bd;display:inline-block;flex:none}
+.save-indicator.saved{color:var(--green)}
+.save-indicator.saved .save-dot{background:var(--green)}
+.save-indicator.error{color:#a66b00}
+.save-indicator.error .save-dot{background:#a66b00}
+.answers{border:0;padding:0;margin:0;display:grid;gap:9px}
+.answers legend{position:absolute;clip:rect(0,0,0,0)}
+.answer{min-height:55px;border:1px solid var(--line);border-radius:13px;display:flex;align-items:center;padding:0 15px;gap:17px;font-size:15px;cursor:pointer;transition:.15s;background:#fff}
+.answer input{position:absolute;opacity:0;pointer-events:none}
+.answer .num{color:var(--muted);font-size:14px;font-weight:600}
+.answer.selected{border:2px solid #138458;background:#eff8e9;padding:0 14px;font-weight:700}
+.answer.selected .num{color:var(--green)}
+.answer.selected:after{content:"✓";margin-left:auto;color:var(--green);font-weight:bold;font-size:17px}
+.answer.correct{border:2px solid #10b981;background:#ecfdf5;padding:0 14px;font-weight:700}
+.answer.correct .num{color:#065f46}
+.answer.correct:after{content:"✓";margin-left:auto;color:#10b981;font-weight:bold;font-size:17px}
+.answer.wrong{border:2px solid #ef4444;background:#fef2f2;padding:0 14px;font-weight:700}
+.answer.wrong .num{color:#991b1b}
+.answer.wrong:after{content:"✕";margin-left:auto;color:#ef4444;font-weight:bold;font-size:17px}
+.answer.disabled{pointer-events:none;opacity:.7}
+.status{background:var(--green-soft);border-radius:13px;padding:15px;margin:22px 0 15px;font-size:13px;color:var(--muted);line-height:1.55}
+.status strong{color:#18875e;display:block;font-size:13px}
+.status.ok{background:#ecfdf5;color:#065f46}
+.status.ok strong{color:#065f46}
+.status.err{background:#fef2f2;color:#991b1b}
+.status.err strong{color:#991b1b}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.btn{height:49px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--green);font-weight:700;font-size:13px}
+.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+.btn.primary:disabled{background:#9ca3af;border-color:#9ca3af;cursor:not-allowed}
+.btn.outline-gold{border-color:var(--gold);color:#a66b00;background:#fff}
+.btn:hover:not(:disabled){filter:brightness(.98)}
+footer{max-width:1245px;margin:25px auto 0;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+footer p{margin:0}
+footer .footer-links{display:flex;gap:22px;font-weight:600}
+.appeal-layer{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:26px 4.1%;overflow:auto}
+.appeal-layer.open{display:flex}
+.backdrop{position:absolute;inset:0;background:rgba(248,251,247,.56);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.appeal-shell{position:relative;z-index:1;width:min(1265px,100%);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:40px;align-items:center}
+.appeal-left h1{font-size:23px;margin:0 0 28px}
+.appeal-panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:25px;position:relative}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:19px}
+.panel-heading h2{font-size:23px;margin:0}
+.close{font-size:23px;color:#698278;border:0;background:transparent;padding:0 0 0 10px;line-height:1}
+.context-box{background:var(--pale);border-radius:14px;padding:12px 15px;margin-bottom:20px}
+.context-box small{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
+.context-box strong{font-size:14px;color:var(--green)}
+.field-label{font-size:13px;font-weight:700;display:block;margin:0 0 10px}
+.appeal-panel select,.appeal-panel textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:13px 14px;font-size:13px;outline:none}
+.appeal-panel select{height:45px;margin-bottom:19px}
+.appeal-panel textarea{height:85px;resize:vertical;line-height:1.45}
+.label-row{display:flex;justify-content:space-between;align-items:center}
+.label-row small{font-size:10px;color:var(--muted);font-weight:400}
+.helper{font-size:12px;color:var(--muted);margin:17px 0 20px}
+.appeal-actions{display:grid;grid-template-columns:165px 1fr;gap:11px}
+.appeal-actions .btn{height:45px}
+.appeal-right{padding:55px 0 0}
+.right-eyebrow{font-size:11px;color:var(--green);font-weight:700;margin-bottom:26px}
+.feature{display:grid;grid-template-columns:28px 1fr;gap:16px;margin-bottom:26px}
+.feature-num{color:var(--green);font-size:14px;font-weight:700}
+.feature h3{font-size:16px;margin:0 0 7px}
+.feature p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;max-width:370px}
+.right-note{background:var(--green-soft);border-radius:14px;padding:12px 16px;color:#16865e;font-size:12px;line-height:1.45;margin-top:38px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#203b34;color:white;padding:12px 18px;border-radius:12px;z-index:40;font-size:13px;display:none;box-shadow:0 8px 30px #203b3430}
+.toast.show{display:block}
+[hidden]{display:none!important}
+.task-list li::before{content:none!important;display:none!important}
+.task-list li.done::before,.task-list li.current::before{content:none!important;display:none!important}
+.profile-trigger{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:5px;border-radius:12px;text-align:left;color:var(--ink)}
+.profile-trigger:hover{background:#f2f7f0}
+.profile-chevron{color:var(--muted);margin-left:2px}
+.profile-page-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:25px}
+.profile-page-head h1{font-size:31px;margin:0 0 8px}
+.profile-page-head p{margin:0;color:var(--muted);font-size:14px}
+.profile-back{padding:0 20px}
+.profile-hero{display:grid;grid-template-columns:82px minmax(180px,1fr) minmax(220px,340px);gap:22px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:23px;padding:25px;margin-bottom:22px}
+.profile-avatar-large{width:78px;height:78px;border-radius:24px;background:var(--green-soft);display:grid;place-items:center;color:var(--green);font-size:24px;font-weight:700}
+.profile-hero-info h2{font-size:24px;margin:10px 0 5px}
+.profile-hero-info p{font-size:13px;color:var(--muted);margin:0}
+.profile-hero-progress{align-self:center}
+.profile-progress-caption{display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px}
+.profile-progress-caption strong{color:var(--green)}
+.profile-hero-progress progress{margin-bottom:7px}
+.profile-hero-progress small{font-size:11px;color:var(--muted)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.profile-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:23px}
+.profile-card h2{font-size:19px;margin:0 0 20px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-tile{background:var(--pale);border-radius:15px;padding:14px 12px;display:flex;flex-direction:column;gap:7px}
+.stat-icon{color:var(--green);font-size:18px}
+.stat-tile strong{font-size:25px}
+.stat-tile small{font-size:11px;color:var(--muted);line-height:1.3}
+.subheading{font-size:14px!important;margin:23px 0 13px!important}
+.profile-course-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:9px}
+.profile-course-row strong{color:var(--green)}
+.profile-form{display:flex;flex-direction:column;gap:9px}
+.profile-form label{font-size:12px;font-weight:700;margin-top:3px}
+.profile-form input{height:44px;border:1px solid var(--line);border-radius:11px;padding:0 13px;font-size:13px;color:var(--ink);outline:none}
+.profile-form input:focus{border-color:var(--green)}
+.profile-form .btn{margin-top:8px}
+.profile-hint{font-size:11px;line-height:1.45;color:var(--muted);margin:2px 0}
+.profile-section-heading{display:flex;align-items:center;justify-content:space-between}
+.profile-section-heading h2{margin-bottom:14px}
+.muted-small{font-size:11px;color:var(--muted)}
+.history-list{display:flex;flex-direction:column;max-height:340px;overflow-y:auto}
+.history-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #edf1eb}
+.history-mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#f0f5ed;color:var(--muted);font-size:12px;font-weight:700;flex-shrink:0}
+.history-mark.completed{background:var(--green-soft);color:var(--green)}
+.history-copy{flex:1;min-width:0}
+.history-copy strong{font-size:12px;display:block}
+.history-copy small{font-size:10px;color:var(--muted)}
+.history-status{font-size:10px;color:var(--muted)}
+.history-status.completed{color:var(--green);font-weight:700}
+.achievement-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #edf1eb}
+.achievement-icon{width:38px;height:38px;border-radius:12px;background:var(--pale);display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.achievement-row>div{flex:1;min-width:0}
+.achievement-row strong{display:block;font-size:12px;margin-bottom:4px}
+.achievement-row small{font-size:10px;color:var(--muted)}
+.achievement-state{font-size:10px;color:var(--muted);white-space:nowrap}
+@media(max-width:900px){
+ body{padding:0 18px 20px}.topbar{padding:0 18px;gap:12px}.brand{min-width:auto;gap:10px}.nav{gap:3px}.nav a{padding:10px 7px;font-size:12px}.top-right{gap:8px}
+ .layout{grid-template-columns:220px minmax(0,1fr);gap:18px}.content-head h1{font-size:27px}
+ .appeal-shell{gap:22px}.appeal-panel{padding:20px}.appeal-right{padding-top:48px}
+}
+@media(max-width:760px){
+ .profile-page-head{align-items:flex-start;gap:15px;flex-direction:column}
+ .profile-hero{grid-template-columns:65px 1fr;padding:18px;gap:14px}
+ .profile-avatar-large{width:62px;height:62px}
+ .profile-hero-progress{grid-column:1/-1}
+ .profile-grid{grid-template-columns:1fr}
+ .stats-grid{gap:7px}.stat-tile{padding:11px 9px}
+}
+@media(max-width:680px){
+ body{padding:0 12px 18px}.topbar{height:auto;min-height:72px;flex-wrap:wrap;padding:12px}.nav{order:3;width:100%;justify-content:space-between}.top-right{margin-left:auto}.user-meta{display:none}
+ .layout{display:block}.sidebar{display:none}.content-head{margin-top:20px}.content-head h1{font-size:25px}.task-card{padding:16px}.question{font-size:19px}
+ footer{display:block;line-height:1.8}.footer-links{margin-top:8px}
+ .appeal-layer{padding:16px;align-items:flex-start}.appeal-shell{display:block;margin:auto}.appeal-left h1{font-size:20px;margin:8px 0 15px}.appeal-panel{padding:18px}.appeal-panel .panel-heading h2{font-size:21px}
+ .appeal-right{padding:22px 8px 8px}.right-eyebrow{margin-bottom:16px}.feature{margin-bottom:17px}.right-note{margin-top:20px}
+ .appeal-actions{grid-template-columns:1fr}.appeal-actions .btn{height:44px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark"></div><div><div class="brand-name">Көшәк</div><span class="brand-sub">ШКОЛА ВОЗМОЖНОСТЕЙ</span></div></div>
+  <nav class="nav"><a href="/">Главная</a><a href="#">О школе</a><a class="active" href="/exercise">Учёба</a><a href="#">Школьная жизнь</a></nav>
+  <div class="top-right"><button class="bell" type="button" aria-label="Уведомления">♧</button><span class="vline"></span><button class="profile-trigger" id="profile-open" type="button" aria-label="Открыть личный кабинет"><span class="avatar" id="header-avatar">—</span><span class="user-meta"><strong id="header-name">Загрузка…</strong><small id="header-level">Уровень —</small></span><span class="profile-chevron">⌄</span></button></div>
+</header>
+
+<main id="task-page">
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="back"><a href="/">←　На главную</a></p>
+      <section class="sidebar-card">
+        <div class="eyebrow">БАШКИРСКИЙ · НАЧАЛЬНЫЙ</div>
+        <h2>Знакомство<br>и приветствия</h2>
+        <p><span id="done-count">0</span> из <span id="total-count">12</span> заданий выполнено</p>
+        <progress id="progress" value="0" max="12"></progress>
+      </section>
+      <div class="sidebar-title">ЗАДАНИЯ УРОКА</div>
+      <ul class="task-list" id="task-list"></ul>
+      <p class="more-tasks" id="more-tasks">Ещё 6 заданий в этом уроке</p>
+      <div class="tip"><strong>Ошибаться — это нормально</strong>Каждое задание — ещё один шаг к свободному разговору.</div>
+    </aside>
+
+    <section class="lesson">
+      <div class="content-head">
+        <div class="breadcrumb">Учёба　/　Знакомство и приветствия</div>
+        <h1>Практикуемся в башкирском</h1>
+        <p>Маленький шаг — и вы уже знаете больше.</p>
+      </div>
+      <article class="task-card">
+        <div class="card-top"><span class="pill" id="task-type">ПЕРЕВОД СЛОВА</span><span class="task-number" id="task-number">№ —</span></div>
+        <div class="word-box"><small id="word-language">Башкирский язык</small><strong id="task-word">Загрузка…</strong></div>
+        <h2 class="question" id="task-question">Что означает выделенное слово?</h2>
+        <p class="instruction" id="task-instruction">Выберите один вариант ответа</p>
+        <p class="save-indicator" id="save-indicator" role="status"><span class="save-dot"></span> Прогресс сохраняется автоматически</p>
+        <form id="answer-form">
+          <fieldset class="answers" id="answer-options"><legend>Выберите один вариант ответа</legend></fieldset>
+          <div class="status" id="answer-status" role="status"></div>
+          <div class="actions"><button class="btn primary" type="submit" id="next-task" disabled>Следующее →</button><button class="btn outline-gold" type="button" id="appeal-open">Оспорить</button></div>
+        </form>
+      </article>
+    </section>
+  </div>
+</main>
+
+<main id="profile-page" hidden>
+  <div class="profile-page-head">
+    <div>
+      <div class="breadcrumb"><a href="#" id="profile-back-link">Учёба</a>　/　Личный кабинет</div>
+      <h1>Личный кабинет</h1>
+      <p>Ваш профиль и результаты обучения</p>
+    </div>
+    <button class="btn primary profile-back" type="button" id="profile-back">← Вернуться к учёбе</button>
+  </div>
+
+  <section class="profile-hero">
+    <div class="profile-avatar-large" id="profile-avatar-large">—</div>
+    <div class="profile-hero-info">
+      <span class="pill" id="profile-pill">УЧЕНИК · УРОВЕНЬ 1</span>
+      <h2 id="profile-display-name">Загрузка…</h2>
+      <p id="profile-subtitle">Участник школы «Көшәк»</p>
+    </div>
+    <div class="profile-hero-progress">
+      <div class="profile-progress-caption"><span>Прогресс обучения</span><strong id="profile-percent">0%</strong></div>
+      <progress id="profile-progress" value="0" max="12"></progress>
+      <small id="profile-progress-text">0 из 12 заданий выполнено</small>
+    </div>
+  </section>
+
+  <div class="profile-grid">
+    <section class="profile-card profile-stats">
+      <h2>Моя статистика</h2>
+      <div class="stats-grid">
+        <div class="stat-tile"><span class="stat-icon">✓</span><strong id="stat-completed">0</strong><small>Выполнено заданий</small></div>
+        <div class="stat-tile"><span class="stat-icon">★</span><strong id="stat-points">0</strong><small>Очков опыта</small></div>
+        <div class="stat-tile"><span class="stat-icon">🎓</span><strong id="stat-level">1</strong><small>Уровень</small></div>
+      </div>
+      <h3 class="subheading">Прогресс по уроку</h3>
+      <div class="profile-course-row"><span>Знакомство и приветствия</span><strong id="profile-course-count">0 / 12</strong></div>
+      <progress id="profile-course-progress" value="0" max="12"></progress>
+    </section>
+
+    <section class="profile-card">
+      <h2>Мои данные</h2>
+      <form id="profile-form" class="profile-form">
+        <label for="profile-name-input">Логин</label>
+        <input id="profile-name-input" name="name" type="text" readonly>
+        <label for="profile-email-input">Город / Школа / Класс</label>
+        <input id="profile-email-input" name="email" type="text" readonly>
+        <p class="profile-hint">Данные берутся из базы и не редактируются здесь. Чтобы изменить — обратитесь к администратору.</p>
+      </form>
+    </section>
+
+    <section class="profile-card profile-history">
+      <div class="profile-section-heading"><h2>История заданий</h2><span class="muted-small">Из базы</span></div>
+      <div id="profile-task-history" class="history-list"></div>
+    </section>
+
+    <section class="profile-card profile-achievements">
+      <h2>Мои достижения</h2>
+      <div class="achievement-row">
+        <span class="achievement-icon">🌱</span>
+        <div><strong>Первый шаг</strong><small>Начали обучение в школе «Көшәк»</small></div>
+        <span class="achievement-state">Открыто</span>
+      </div>
+      <div class="achievement-row">
+        <span class="achievement-icon">📚</span>
+        <div><strong>С интересом к знаниям</strong><small>Выполните 5 заданий</small></div>
+        <span class="achievement-state" id="achievement-five">В процессе</span>
+      </div>
+      <div class="achievement-row">
+        <span class="achievement-icon">🏅</span>
+        <div><strong>Слово знатока</strong><small>Изучите 10 слов (3 правильных ответа)</small></div>
+        <span class="achievement-state" id="achievement-words">В процессе</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer><p>© 2026 Школа «Көшәк» · Учимся с интересом, растём вместе.</p><div class="footer-links"><a href="#">Правила портала</a><a href="#">Служба поддержки</a></div></footer>
+
+<div class="appeal-layer" id="appeal-layer" aria-hidden="true">
+  <div class="backdrop" id="backdrop"></div>
+  <div class="appeal-shell" role="dialog" aria-modal="true" aria-labelledby="appeal-title">
+    <section class="appeal-left">
+      <h1>Если с заданием что-то не так</h1>
+      <div class="appeal-panel">
+        <div class="panel-heading"><h2 id="appeal-title">Оспорить задание</h2><button type="button" class="close" id="appeal-close" aria-label="Закрыть">×</button></div>
+        <div class="context-box"><small id="appeal-context-title">Задание</small><strong id="appeal-context-word">—</strong></div>
+        <form id="appeal-form">
+          <label class="field-label" for="reason">Что кажется неверным?</label>
+          <select id="reason" name="reason" required>
+            <option value="Возможен другой перевод">Возможен другой перевод</option>
+            <option value="Ошибка в формулировке">Ошибка в формулировке</option>
+            <option value="Неверный вариант ответа">Неверный вариант ответа</option>
+            <option value="Другая проблема">Другая проблема</option>
+          </select>
+          <div class="label-row"><label class="field-label" for="comment">Ваш комментарий</label><small>необязательно</small></div>
+          <textarea id="comment" name="comment" placeholder="Расскажите, что стоит исправить,&#10;или предложите свой перевод..."></textarea>
+          <p class="helper">Мы проверим задание. Ваш прогресс сохранится.</p>
+          <div class="appeal-actions"><button type="button" class="btn" id="appeal-cancel">Отмена</button><button type="submit" class="btn primary">Отправить на проверку</button></div>
+        </form>
+      </div>
+    </section>
+    <aside class="appeal-right">
+      <div class="right-eyebrow">УНИВЕРСАЛЬНАЯ СТРУКТУРА</div>
+      <div class="feature"><span class="feature-num">01</span><div><h3>Любая формулировка</h3><p>Меняйте слово, фразу и вопрос. Длинный текст переносится, а карточка растёт по содержимому.</p></div></div>
+      <div class="feature"><span class="feature-num">02</span><div><h3>Нужное число ответов</h3><p>Редактируйте варианты; третий и четвёртый можно скрыть в свойствах карточки.</p></div></div>
+      <div class="feature"><span class="feature-num">03</span><div><h3>Понятный результат</h3><p>Один компонент для выбора, выбранного ответа и отправки на проверку.</p></div></div>
+      <div class="feature"><span class="feature-num">04</span><div><h3>Обратная связь рядом</h3><p>Кнопка «Оспорить» доступна в каждом состоянии. В обращении сохраняется контекст задания.</p></div></div>
+      <div class="right-note">Меняйте содержание, а не оформление —<br>все задания останутся в одном стиле.</div>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let current=null;            // текущее задание {fragment_id, text_ba, translation, options}
+let serverState={completed:[],correct_count:{},points:0,level:1};
+let answered=false;
+
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function initials(name){const p=String(name||'').trim().split(/\s+/);if(p.length>=2)return (p[0][0]+p[1][0]).toUpperCase();return (name||'?').slice(0,2).toUpperCase();}
+
+async function api(path,opts={}){
+  const res=await fetch(path,{credentials:'same-origin',...opts});
+  if(res.status===401){window.location.href='/login';throw new Error('401');}
+  if(!res.ok){let msg='HTTP '+res.status;try{const j=await res.json();if(j.detail)msg=j.detail;}catch(e){}throw new Error(msg);}
+  return res.json();
+}
+
+function setSaveIndicator(kind,msg){
+  const el=$('save-indicator');
+  if(!el)return;
+  el.className='save-indicator '+kind;
+  el.innerHTML='<span class="save-dot"></span> '+msg;
+}
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ---------- шапка ----------
+async function loadMe(){
+  try{
+    const me=await api('/api/me');
+    $('header-avatar').textContent=initials(me.username);
+    $('header-name').textContent=me.username||'Пользователь';
+    $('header-level').textContent='Уровень '+(me.level??1);
+  }catch(e){console.warn('me:',e);}
+}
+
+// ---------- статус прогресса ----------
+async function loadStatus(){
+  try{
+    serverState=await api('/api/exercise/status');
+  }catch(e){console.warn('status:',e);}
+  renderSidebar();
+  renderProfile();
+}
+
+// ---------- список заданий (сайдбар) ----------
+function renderSidebar(){
+  const completedSet=new Set(serverState.completed);
+  const total=12; // отображаем 12 «слотов», реальных фрагментов может быть больше
+  const list=$('task-list');
+  list.innerHTML='';
+  const realCompleted=[...serverState.completed];
+  const slots=Math.max(total,realCompleted.length+1);
+  for(let i=0;i<slots;i++){
+    const fid=realCompleted[i];
+    const done=fid!==undefined && completedSet.has(fid);
+    const isCurrent=current && current.fragment_id===fid;
+    const li=document.createElement('li');
+    li.className=(done?'done':'')+(isCurrent?' current':'');
+    li.innerHTML=`<button type="button" class="task-nav ${isCurrent?'is-current':''}" data-slot="${i}">
+      <span class="task-nav-mark">${done?'✓':String(i+1).padStart(2,'0')}</span>
+      <span>${fid!==undefined?('Задание '+fid):'Новое задание'}</span>
+    </button>`;
+    list.appendChild(li);
+  }
+  list.querySelectorAll('button[data-slot]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i=+btn.dataset.slot;
+      const fid=realCompleted[i];
+      if(fid!==undefined){
+        // уже пройдено — ничего не делаем (или можно открыть детали)
+        toast('Задание № '+(i+1)+' уже выполнено');
+      }else{
+        toast('Нажмите «Следующее» — загрузим новое задание');
+      }
+    });
+  });
+  const done=serverState.completed.length;
+  $('done-count').textContent=done;
+  $('total-count').textContent=Math.max(12,done+1);
+  $('progress').value=done;
+  $('progress').max=Math.max(12,done+1);
+  $('more-tasks').textContent='Пройдено: '+done;
+}
+
+// ---------- рендер текущего задания ----------
+function renderTask(q){
+  current=q;answered=false;
+  $('task-number').textContent='№ '+String(q.fragment_id).padStart(2,'0');
+  $('task-word').textContent=q.text_ba;
+  $('task-type').textContent='ПЕРЕВОД СЛОВА';
+  $('word-language').textContent='Башкирский язык';
+  $('task-question').textContent='Что означает выделенное слово?';
+  $('task-instruction').textContent='Выберите один вариант ответа';
+
+  const options=$('answer-options');
+  options.innerHTML='<legend>Выберите один вариант ответа</legend>';
+  q.options.forEach((opt,i)=>{
+    const label=document.createElement('label');
+    label.className='answer';
+    label.innerHTML=`<input type="radio" name="answer" value="${escapeHTML(opt)}">
+      <span class="num">${i+1}</span><span>${escapeHTML(opt)}</span>`;
+    options.appendChild(label);
+    const input=label.querySelector('input');
+    input.addEventListener('change',()=>{
+      if(answered)return;
+      options.querySelectorAll('.answer').forEach(l=>l.classList.remove('selected'));
+      label.classList.add('selected');
+      $('next-task').disabled=false;
+      $('answer-status').className='status';
+      $('answer-status').innerHTML='<strong>Ответ выбран</strong>Ваш вариант: '+escapeHTML(opt);
+      setSaveIndicator('','Выбор сделан');
+    });
+  });
+
+  $('answer-status').className='status';
+  $('answer-status').innerHTML='<strong>Ваш ответ</strong>Выберите вариант и нажмите «Проверить».';
+  $('next-task').textContent='Следующее →';
+  $('next-task').disabled=true;
+  setSaveIndicator('','Прогресс сохраняется автоматически');
+  renderSidebar();
+}
+
+// ---------- загрузка нового задания ----------
+async function loadExercise(){
+  $('task-word').textContent='Загрузка…';
+  $('answer-options').innerHTML='';
+  $('next-task').disabled=true;
+  try{
+    const q=await api('/api/exercise/random');
+    renderTask(q);
+  }catch(e){
+    $('task-word').textContent='';
+    $('answer-status').className='status err';
+    $('answer-status').innerHTML='<strong>Ошибка</strong>Не удалось загрузить задание: '+escapeHTML(e.message);
+  }
+}
+
+// ---------- отправка ответа ----------
+async function submitAnswer(){
+  if(!current||answered)return;
+  const checked=document.querySelector('#answer-options input[name="answer"]:checked');
+  if(!checked){toast('Сначала выберите вариант');return;}
+
+  const chosen=checked.value;
+  const correct=chosen===current.translation;
+  answered=true;
+
+  // подсветка
+  document.querySelectorAll('#answer-options .answer').forEach(l=>{
+    l.querySelector('input').disabled=true;
+    const val=l.querySelector('input').value;
+    if(val===current.translation)l.classList.add('correct');
+    else if(val===chosen)l.classList.add('wrong');
+  });
+
+  const status=$('answer-status');
+  status.className='status '+(correct?'ok':'err');
+  status.innerHTML=correct
+    ? '<strong>Верно!</strong>«'+escapeHTML(current.text_ba)+'» — «'+escapeHTML(current.translation)+'»'
+    : '<strong>Неверно</strong>Правильный перевод: «'+escapeHTML(current.translation)+'»';
+
+  $('next-task').textContent='Следующее →';
+  $('next-task').disabled=false;
+  setSaveIndicator('saved','Прогресс сохранён на сервере');
+
+  try{
+    await api('/api/exercise/answer',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fragment_id:current.fragment_id,correct})
+    });
+    await loadStatus();
+  }catch(e){console.warn('answer:',e);setSaveIndicator('error','Не удалось сохранить ответ');}
+}
+
+$('next-task').addEventListener('click',e=>{
+  e.preventDefault();
+  if(!answered){submitAnswer();return;}
+  loadExercise();
+});
+$('answer-form').addEventListener('submit',e=>{e.preventDefault();submitAnswer();});
+
+// ---------- оспаривание ----------
+const layer=$('appeal-layer');
+function openAppeal(){
+  if(!current){toast('Задание ещё не загружено');return;}
+  $('appeal-context-title').textContent='Задание № '+String(current.fragment_id).padStart(2,'0')+' · Перевод слова';
+  $('appeal-context-word').textContent=current.text_ba+' → '+current.translation;
+  layer.classList.add('open');layer.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function closeAppeal(){
+  layer.classList.remove('open');layer.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+$('appeal-open').addEventListener('click',openAppeal);
+$('appeal-close').addEventListener('click',closeAppeal);
+$('appeal-cancel').addEventListener('click',closeAppeal);
+$('backdrop').addEventListener('click',closeAppeal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&layer.classList.contains('open'))closeAppeal();});
+$('appeal-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!current)return;
+  const comment=$('comment').value.trim();
+  const reason=$('reason').value;
+  const proposed=comment||('Оспорено: '+reason);
+  try{
+    await api('/api/exercise/dispute',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        fragment_id:current.fragment_id,
+        text_ba:current.text_ba,
+        translation:proposed,
+        lang_pair:'ba-ru'
+      })
+    });
+    $('appeal-form').reset();closeAppeal();
+    toast('Обращение отправлено на проверку.');
+  }catch(err){toast('Не удалось отправить: '+err.message);}
+});
+
+// ---------- профиль ----------
+async function renderProfile(){
+  try{
+    const me=await api('/api/me');
+    $('header-name').textContent=me.username||'Пользователь';
+    $('header-avatar').textContent=initials(me.username);
+    $('header-level').textContent='Уровень '+(me.level??1);
+
+    const completed=serverState.completed.length;
+    const total=Math.max(12,completed+1);
+    const percent=Math.round(completed/total*100);
+
+    $('profile-avatar-large').textContent=initials(me.username);
+    $('profile-display-name').textContent=me.username||'Пользователь';
+    $('profile-pill').textContent='УЧЕНИК · УРОВЕНЬ '+(me.level??1);
+    $('profile-subtitle').textContent=[me.city,me.school,me.grade].filter(Boolean).join(' · ')||'Участник школы «Көшәк»';
+    $('profile-percent').textContent=percent+'%';
+    $('profile-progress').value=completed;
+    $('profile-progress').max=total;
+    $('profile-progress-text').textContent=completed+' из '+total+' заданий выполнено';
+    $('stat-completed').textContent=completed;
+    $('stat-points').textContent=me.points??0;
+    $('stat-level').textContent=me.level??1;
+    $('profile-course-count').textContent=completed+' / '+total;
+    $('profile-course-progress').value=completed;
+    $('profile-course-progress').max=total;
+    $('profile-name-input').value=me.username||'';
+    $('profile-email-input').value=[me.city,me.school,me.grade].filter(Boolean).join(' · ')||'—';
+
+    const wordsLearned=Object.values(serverState.correct_count).filter(n=>n>=3).length;
+    $('achievement-five').textContent=completed>=5?'Открыто':'В процессе';
+    $('achievement-five').style.color=completed>=5?'var(--green)':'var(--muted)';
+    $('achievement-words').textContent=wordsLearned>=10?'Открыто':(wordsLearned+' / 10');
+    $('achievement-words').style.color=wordsLearned>=10?'var(--green)':'var(--muted)';
+
+    const history=$('profile-task-history');
+    history.innerHTML='';
+    const items=Object.entries(serverState.correct_count).slice(0,50);
+    if(items.length===0){
+      history.innerHTML='<p style="color:var(--muted);font-size:12px;padding:12px 0">Пока нет выполненных заданий</p>';
+    }else{
+      items.forEach(([fid,cnt])=>{
+        const done=cnt>0;
+        const row=document.createElement('div');row.className='history-item';
+        row.innerHTML=`<span class="history-mark ${done?'completed':''}">${done?'✓':'·'}</span>
+          <span class="history-copy"><strong>Фрагмент #${fid}</strong><small>Правильных: ${cnt}</small></span>
+          <span class="history-status ${done?'completed':''}">${done?'Выполнено':'—'}</span>`;
+        history.appendChild(row);
+      });
+    }
+  }catch(e){console.warn('profile:',e);}
+}
+
+function showProfile(){
+  closeAppeal();
+  $('task-page').hidden=true;
+  $('profile-page').hidden=false;
+  renderProfile();window.scrollTo({top:0,behavior:'smooth'});
+}
+function showStudy(){
+  $('profile-page').hidden=true;
+  $('task-page').hidden=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$('profile-open').addEventListener('click',showProfile);
+$('profile-back').addEventListener('click',showStudy);
+$('profile-back-link').addEventListener('click',e=>{e.preventDefault();showStudy();});
+
+// ---------- старт ----------
+(async()=>{
+  await loadMe();
+  await loadStatus();
+  await loadExercise();
+})();
+</script>
+</body>
+</html>
